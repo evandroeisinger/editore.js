@@ -9,6 +9,16 @@ describe('editor.js - unit', function() {
     expect(new Editor() instanceof Error).toBe(true);
   });
 
+  it('return the element editable', function() {
+    var form = $j([
+      '<form>',
+        '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
+        '<p data-field="description"></p>',
+      '</form>'].join())[0];
+
+    expect(Editor.prototype.applyEditable(form).getAttribute('contenteditable')).toBeTruthy();
+  });
+
   it('return the correct fields from form', function() {
     var form = $j([
       '<form>',
@@ -21,6 +31,7 @@ describe('editor.js - unit', function() {
     expect(editor.fields.length).toBe(2);
     expect(editor.fields[1].name).toBe('title');
     expect(editor.fields[1].length).toBe(10);
+    expect(editor.fields[0].element).toBe($j('p', form)[0]);
     expect(editor.fields[1].placeholder).toBe('Title');
     expect(editor.fields[0].placeholder).toBe(false);
   });
