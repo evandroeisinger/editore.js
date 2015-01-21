@@ -6,7 +6,15 @@
   <style type="text/css"></style>
 </head>
 <body>
+  <form id="form">
+    <h1 data-field="title" data-placeholder="Title" data-length="20"></h1>
+    <p data-filed="description" data-placeholder="Description" data-length="120"></p>
+  </form>
+
   <script type="text/javascript" src="../src/editor.js"></script>
-  <script type="text/javascript"></script>
+  <script type="text/javascript">
+    var form   = document.getElementById('form'),
+        editor = new Editor(form);
+  </script>
 </body>
 </html>
