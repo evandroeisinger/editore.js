@@ -33,6 +33,7 @@
       return method.bind(context, data);
     }
 
+    // editor init
     if (self.fields.length)
       for (var field in self.fields) (function (field) {
         if (field.length) {
@@ -75,10 +76,12 @@
     getDataAttribute: function(name, element, isInt) {
       var value = element.getAttribute('data-' + name) || false;
 
+      if (!value)
+        return false;
       if (isInt)
         return window.parseInt(value);
-      else
-        return value;
+      
+      return value;
     },
 
     getInnerText: function(element) {
