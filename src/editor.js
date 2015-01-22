@@ -26,21 +26,41 @@
     // regex patterns
     self.regex        = {};
     self.regex.markup = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
-    self.regex.space  = /(&nbsp;)*/g;
+    self.regex.enbsp  = /&nbsp;*/g;
+    self.regex.space  = /\s/g;
+    self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
     // handler methods
-    function handler(method, data, context) {
-      return method.bind(context, data);
+    function handler(methods, data, context) {
+      return function() {
+        for (var method in methods) (function (method) {
+          method.call(context, data);
+        }(methods[method]));
+      }
     }
 
     // editor init
     if (self.fields.length)
       for (var field in self.fields) (function (field) {
-        if (field.length) {
-          field.element.addEventListener('click', handler(self.validateLength, field, self));
-          field.element.addEventListener('focus', handler(self.validateLength, field, self));
-          field.element.addEventListener('keyup', handler(self.validateLength, field, self));
+        var clickHandlers = [],
+            focusHandlers = [],
+            keyupHanlders = [];
+
+        if (field.maxLength) {
+          clickHandlers.push(self.validateLength);
+          focusHandlers.push(self.validateLength);
+          keyupHanlders.push(self.validateLength);
         }
+
+        if (field.require) {
+          clickHandlers.push(self.validateRequire);
+          focusHandlers.push(self.validateRequire);
+          keyupHanlders.push(self.validateRequire);
+        }
+
+        field.element.addEventListener('click', handler(clickHandlers, field, self));
+        field.element.addEventListener('focus', handler(focusHandlers, field, self));
+        field.element.addEventListener('keyup', handler(keyupHanlders, field, self));
       }(self.fields[field]))
 
     return {
@@ -63,9 +83,10 @@
         if (field)
           fields.push({
             name        : field,
-            type        : self.getDataAttribute('type', element) || '',
-            length      : self.getDataAttribute('length', element, true),
+            type        : self.getDataAttribute('type', element) || 'simple',
+            maxLength   : self.getDataAttribute('length', element, true),
             placeholder : self.getDataAttribute('placeholder', element),
+            require     : self.getDataAttribute('require', element),
             element     : self.applyEditable(self.applyTabIndex(element, tabIndex))
           });
       }(form.children[i]));
@@ -88,7 +109,7 @@
       var self = this;
       return element.innerHTML
         .replace(self.regex.markup, '')
-        .replace(self.regex.space, '');
+        .replace(self.regex.enbsp, '');
     },
 
     applyEditable: function(element) {
@@ -112,16 +133,24 @@
     },
 
     validateLength: function(field) {
-      var self      = this, 
-      currentLength = self.getInnerText(field.element).length;
+      var self = this;
 
-      if (currentLength > field.length) {
-        self.applyClassName(field.element, 'invalid');
-        return false;
-      }
-      
+      field.length = field.element.innerHTML
+        .replace(self.regex.markup, '')
+        .replace(self.regex.spaceAndEnbsp, '_')
+        .length;
+
+      if (field.length > field.maxLength)
+        return self.applyClassName(field.element, 'invalid');
       self.removeClassName(field.element, 'invalid')
-      return true;
+    },
+
+    validateRequire: function(field) {
+      var self = this;
+
+      if (!field.length)
+        return self.applyClassName(field.element, 'require');
+      self.removeClassName(field.element, 'require')
     }
   }
 
