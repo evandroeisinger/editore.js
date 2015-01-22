@@ -14,12 +14,33 @@
     if (!form || !form.nodeName)
       return new Error('No form was passed!');
 
+    // elements
     self.form   = form;
     self.fields = self.getFields(self.form);
+    
+    // field types
+    self.types        = {};
+    self.types.RICH   = 'rich';
+    self.types.SIMPLE = 'simple';
+
+    // regex patterns
+    self.regex       = {};
+    self.regex.arkup = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
+    self.regex.space = /(&nbsp;)*/g;
+
+    // handler methods
+    function handler(method, data, context) {
+      return method.bind(context, data);
+    }
 
     if (self.fields.length)
-      for (var field in self.fields)
-        self.applyFieldEvents(self.fields[field]);
+      for (var field in self.fields) (function (field) {
+        if (field.length) {
+          field.element.addEventListener('click', handler(self.validateLength, field, self));
+          field.element.addEventListener('focus', handler(self.validateLength, field, self));
+          field.element.addEventListener('keyup', handler(self.validateLength, field, self));
+        }
+      }(self.fields[field]))
 
     return {
       fields: self.fields
@@ -41,7 +62,7 @@
         if (field)
           fields.push({
             name        : field,
-            typeof      : self.getDataAttribute('type', element),
+            type        : self.getDataAttribute('type', element) || '',
             length      : self.getDataAttribute('length', element, true),
             placeholder : self.getDataAttribute('placeholder', element),
             element     : self.applyEditable(self.applyTabIndex(element, tabIndex))
@@ -60,6 +81,13 @@
         return value;
     },
 
+    getInnerText: function(element) {
+      var self = this;
+      return element.innerHTML
+        .replace(self.regex.markup, '')
+        .replace(self.regex.space, '');
+    },
+
     applyEditable: function(element) {
       element.setAttribute('contenteditable', true);
       return element; 
@@ -70,12 +98,28 @@
       return element; 
     },
 
-    applyFieldEvents: function(field) {
-      // placeholder
-      // length
+    applyClassName: function(element, className) {
+      if (element.classList)
+        return element.classList.add(className);
     },
 
-    applyType: function(field, type) {}
+    removeClassName: function(element, className) {
+      if (element.classList)
+        return element.classList.remove(className);
+    },
+
+    validateLength: function(field) {
+      var self      = this, 
+      currentLength = self.getInnerText(field.element).length;
+
+      if (currentLength > field.length) {
+        self.applyClassName(field.element, 'invalid');
+        return false;
+      }
+      
+      self.removeClassName(field.element, 'invalid')
+      return true;
+    }
   }
 
   return Editor;
