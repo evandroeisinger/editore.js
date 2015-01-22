@@ -32,9 +32,9 @@
 
     // handler methods
     function handler(methods, data, context) {
-      return function() {
+      return function(e) {
         for (var method in methods) (function (method) {
-          method.call(context, data);
+          method.call(context, data, e);
         }(methods[method]));
       }
     }
@@ -42,25 +42,35 @@
     // editor init
     if (self.fields.length)
       for (var field in self.fields) (function (field) {
-        var clickHandlers = [],
-            focusHandlers = [],
-            keyupHanlders = [];
+        var click   = [],
+            focus   = [],
+            keyup   = [self.calculateLength],
+            keydown = [];
 
         if (field.maxLength) {
-          clickHandlers.push(self.validateLength);
-          focusHandlers.push(self.validateLength);
-          keyupHanlders.push(self.validateLength);
+          keyup.push(self.validateLength);
+        }
+
+        if (field.placeholder) {
+          keyup.push(self.validatePlaceholder);
+          keydown.push(self.removePlaceHolder);
         }
 
         if (field.require) {
-          clickHandlers.push(self.validateRequire);
-          focusHandlers.push(self.validateRequire);
-          keyupHanlders.push(self.validateRequire);
+          keyup.push(self.validateRequire);
         }
 
-        field.element.addEventListener('click', handler(clickHandlers, field, self));
-        field.element.addEventListener('focus', handler(focusHandlers, field, self));
-        field.element.addEventListener('keyup', handler(keyupHanlders, field, self));
+        field.element.addEventListener('click', handler(click, field, self));
+        field.element.addEventListener('focus', handler(focus, field, self));
+        field.element.addEventListener('keyup', handler(keyup, field, self));
+        field.element.addEventListener('keydown', handler(keydown, field, self));
+
+        self
+          .calculateLength(field)
+          .validateLength(field)
+          .validatePlaceholder(field)
+          .validateRequire(field);
+
       }(self.fields[field]))
 
     return {
@@ -112,6 +122,22 @@
         .replace(self.regex.enbsp, '');
     },
 
+    getClassName: function(element, className) {
+      if (element.classList)
+        return element.classList.contains(className);
+    },
+
+    calculateLength: function(field) {
+      var self = this;
+
+      field.length = field.element.innerHTML
+        .replace(self.regex.markup, '')
+        .replace(self.regex.spaceAndEnbsp, '_')
+        .length;
+
+      return self;
+    },
+
     applyEditable: function(element) {
       element.setAttribute('contenteditable', true);
       return element; 
@@ -132,25 +158,39 @@
         return element.classList.remove(className);
     },
 
+    removePlaceHolder: function(field, event) {
+      var self = this;
+      
+      if (event.keyCode !== 9)
+        self.removeClassName(field.element, 'placeholder');
+    },
+
     validateLength: function(field) {
       var self = this;
 
-      field.length = field.element.innerHTML
-        .replace(self.regex.markup, '')
-        .replace(self.regex.spaceAndEnbsp, '_')
-        .length;
-
       if (field.length > field.maxLength)
-        return self.applyClassName(field.element, 'invalid');
-      self.removeClassName(field.element, 'invalid')
+        self.applyClassName(field.element, 'invalid');
+      else
+        self.removeClassName(field.element, 'invalid')
+      return self;
     },
 
     validateRequire: function(field) {
       var self = this;
 
       if (!field.length)
-        return self.applyClassName(field.element, 'require');
-      self.removeClassName(field.element, 'require')
+        self.applyClassName(field.element, 'require');
+      else
+        self.removeClassName(field.element, 'require')
+      return self;
+    },
+
+    validatePlaceholder: function(field) {
+      var self = this;
+
+      if (!field.length)
+        self.applyClassName(field.element, 'placeholder');
+      return self;
     }
   }
 
