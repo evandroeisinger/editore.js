@@ -24,9 +24,9 @@
     self.types.SIMPLE = 'simple';
 
     // regex patterns
-    self.regex       = {};
-    self.regex.arkup = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
-    self.regex.space = /(&nbsp;)*/g;
+    self.regex        = {};
+    self.regex.markup = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
+    self.regex.space  = /(&nbsp;)*/g;
 
     // handler methods
     function handler(method, data, context) {

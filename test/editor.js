@@ -35,21 +35,21 @@ describe('editor.js - unit', function() {
 
   it('return the element editable', function() {
     var form = $j([
-      '<form>',
-        '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
-        '<p data-field="description"></p>',
-      '</form>'].join())[0];
+        '<form>',
+          '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
+          '<p data-field="description"></p>',
+        '</form>'].join())[0];
 
     expect(Editor.prototype.applyEditable(form).getAttribute('contenteditable')).toBeTruthy();
   });
 
   it('return the correct fields from form', function() {
     var form = $j([
-      '<form>',
-        '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
-        '<p data-field="description"></p>',
-        '<p></p>',
-      '</form>'].join())[0],
+        '<form>',
+          '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
+          '<p data-field="description"></p>',
+          '<p></p>',
+        '</form>'].join())[0],
       editor = new Editor(form);
 
     expect(editor.fields.length).toBe(2);
@@ -67,5 +67,16 @@ describe('editor.js - unit', function() {
     expect(Editor.prototype.getDataAttribute('length', element)).toBe('10');
     expect(Editor.prototype.getDataAttribute('length', element, true)).toBe(10);
     expect(Editor.prototype.getDataAttribute('data-field', element)).toBe(false);
+  });
+
+  it('validate length', function() {
+    // karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+    // var innerText = 'InnerText test rocks! ',
+    //     form = $j([
+    //       '<form>',
+    //         '<h1 data-field="title" data-length="10" data-placeholder="Title">InnerText test </h1>',
+    //         '<p data-field="description">rocks!</p>',
+    //       '</form>'].join())[0];
+    // expect(Editor.prototype.getInnerText(form)).toBe(innerText);
   });
 });
