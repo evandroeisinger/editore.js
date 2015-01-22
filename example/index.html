@@ -3,13 +3,17 @@
 <head>
   <title>editor.js</title>
   <link rel="stylesheet" type="text/css" href="../src/editor.css">
-  <style type="text/css"></style>
+  <style type="text/css">
+    .placeholder::after {
+      content: attr(data-placeholder);
+    }
+  </style>
 </head>
 <body>
   <form id="form">
-    <h1 data-field="title" data-require="true" data-type="simple" data-placeholder="Title" data-length="20">Title</h1>
-    <p data-field="description" data-type="simple" data-placeholder="Description" data-length="120">Description</p>
-    <article data-field="articleBody" data-type="rich" data-placeholder="Title" data-length="10">Article body</article>
+    <h1 class="field" data-field="title" data-require="true" data-type="simple" data-placeholder="Title" data-length="20">Editor.js</h1>
+    <p class="field" data-field="description" data-type="simple" data-placeholder="Description" data-length="120"></p>
+    <article class="field" data-field="articleBody" data-require="true" data-type="rich" data-placeholder="Article Body" data-length="10"></article>
   </form>
 
   <script type="text/javascript" src="../src/editor.js"></script>
