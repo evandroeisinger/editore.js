@@ -122,20 +122,22 @@
         return fields;
 
       for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
-        var field    = self.getDataAttribute('field', element),
+        var field    = self.getDataAttribute('field', element, 'str', false),
             tabIndex = (i - length);
 
-        if (field)
+        if (field) {
           fields[field] = {
-            name        : field,
-            type        : self.getDataAttribute('type', element) || 'simple',
-            maxLength   : self.getDataAttribute('length', element, true),
-            placeholder : self.getDataAttribute('placeholder', element),
-            require     : self.getDataAttribute('require', element),
-            element     : self.applyEditable(self.applyTabIndex(element, tabIndex)),
-            value       : self.getValue,
-            valid       : false
+          name        : field,
+          type        : self.getDataAttribute('type', element, 'str', 'single'),
+          maxLength   : self.getDataAttribute('length', element, 'int', false),
+          placeholder : self.getDataAttribute('placeholder', element, 'str', false),
+          require     : self.getDataAttribute('require', element, 'bol', false),
+          element     : self.applyEditable(self.applyTabIndex(element, tabIndex)),
+          value       : self.getValue,
+          length      : 0,
+          valid       : false
           }
+        }
       }(form.children[i]));
 
       return fields;
@@ -146,13 +148,26 @@
       return '';
     },
 
-    getDataAttribute: function(name, element, isInt) {
-      var value = element.getAttribute('data-' + name) || false;
+    getDataAttribute: function(name, element, type, defaultValue) {
+      var value = element.getAttribute('data-' + name);
 
       if (!value)
-        return false;
-      if (isInt)
-        return window.parseInt(value);
+        return defaultValue || false;
+
+      switch (type) {
+        case 'str':
+          value = value.toString();
+          break;
+        case 'int':
+          value = window.parseInt(value);
+          break;
+        case 'bol':
+          value = (value == 'true');
+          break;
+        default:
+          value = value.toString();
+          break;
+      }
       
       return value;
     },
