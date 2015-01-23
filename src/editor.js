@@ -74,6 +74,15 @@
       return values;
     }
 
+    function validate() {
+      for (var field in self.fields) (function (field) {
+        self
+        .calculateLength(field)
+        .validateLength(field)
+        .validateRequire(field);
+      }(self.fields[field]))
+    }
+
     // editor constructor
     for (var field in self.fields) (function (field) {
       var click   = [],
@@ -99,17 +108,14 @@
       field.element.addEventListener('keyup', setHandler(keyup, field, self));
       field.element.addEventListener('keydown', setHandler(keydown, field, self));
 
-      self
-        .calculateLength(field)
-        .validateLength(field)
-        .validatePlaceholder(field)
-        .validateRequire(field);
+      self.calculateLength(field);
 
     }(self.fields[field]))
 
     return {
-      fields : getFields,
-      values : getValues
+      fields   : getFields,
+      values   : getValues,
+      validate : validate
     }
   }
 
