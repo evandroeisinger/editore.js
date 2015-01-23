@@ -4,9 +4,10 @@
   <title>editor.js</title>
   <link rel="stylesheet" type="text/css" href="../src/editor.css">
   <style type="text/css">
-    .placeholder::after {
-      content: attr(data-placeholder);
-    }
+    .placeholder::after { content: attr(data-placeholder); }
+    .field { border: none; outline: none; }
+    .invalid { border: 1px solid red; }
+    .require { border: 1px solid orange; }
   </style>
 </head>
 <body>
