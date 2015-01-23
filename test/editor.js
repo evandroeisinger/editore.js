@@ -9,7 +9,7 @@ describe('editor.js', function() {
         '<p data-field="description"></p>',
         '<p></p>',
       '</form>'].join())[0];
-    field = $j(['<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',].join())[0];
+    field = $j(['<h1 data-field="title" data-length="10" data-placeholder="Title" data-require="true"></h1>',].join())[0];
   });
 
   it('return a Editor instance', function() {
@@ -37,10 +37,13 @@ describe('editor.js', function() {
   });
 
   it('return data attributes', function() {
-    expect(Editor.prototype.getDataAttribute('field', field)).toBe('title');
-    expect(Editor.prototype.getDataAttribute('length', field)).toBe('10');
-    expect(Editor.prototype.getDataAttribute('length', field, true)).toBe(10);
-    expect(Editor.prototype.getDataAttribute('data-field', field)).toBe(false);
+    expect(Editor.prototype.getDataAttribute('field', field, 'str', false)).toBe('title');
+    expect(Editor.prototype.getDataAttribute('require', field, 'bol', false)).toBe(true);
+    expect(Editor.prototype.getDataAttribute('length', field, 'int', false)).toBe(10);
+
+    expect(Editor.prototype.getDataAttribute('defaultValue', field, 'str', 'defaultValue')).toBe('defaultValue');
+    expect(Editor.prototype.getDataAttribute('defaultValue', field, 'bol', true)).toBe(true);
+    expect(Editor.prototype.getDataAttribute('defaultValue', field, 'int', 123)).toBe(123);
   });
 
   it('return fields', function() {
