@@ -40,7 +40,6 @@ describe('editor.js', function() {
     expect(Editor.prototype.getDataAttribute('field', field, 'str', false)).toBe('title');
     expect(Editor.prototype.getDataAttribute('require', field, 'bol', false)).toBe(true);
     expect(Editor.prototype.getDataAttribute('length', field, 'int', false)).toBe(10);
-
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'str', 'defaultValue')).toBe('defaultValue');
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'bol', true)).toBe(true);
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'int', 123)).toBe(123);
@@ -59,6 +58,10 @@ describe('editor.js', function() {
   });
 
   it('validate length', function() {
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  });
+
+  it('validate valid', function() {
     // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
   });
 
