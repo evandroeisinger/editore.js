@@ -65,6 +65,10 @@ describe('editor.js', function() {
     // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
   });
 
+  it('validate fields', function() {
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  });
+
   it('validate require', function() {
     // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
   });
