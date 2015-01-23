@@ -67,7 +67,7 @@
           name   : field.name,
           value  : field.value(field),
           length : field.length,
-          valid  : field.valid
+          valid  : field.valid(field)
         }
       }(self.fields[field]))
 
@@ -134,8 +134,8 @@
           require     : self.getDataAttribute('require', element, 'bol', false),
           element     : self.applyEditable(self.applyTabIndex(element, tabIndex)),
           value       : self.getValue,
-          length      : 0,
-          valid       : false
+          valid       : self.getValid,
+          length      : 0
           }
         }
       }(form.children[i]));
@@ -146,6 +146,14 @@
     getValue: function(field) {
       var self = this;
       return '';
+    },
+
+    getValid: function(field) {
+      if (field.require && field.element.classList.contains('require'))
+        return false;
+      if (field.maxLength && field.element.classList.contains('invalid'))
+        return false;
+      return true;
     },
 
     getDataAttribute: function(name, element, type, defaultValue) {
@@ -205,40 +213,30 @@
       return element; 
     },
 
-    applyClassName: function(element, className) {
-      if (element.classList)
-        return element.classList.add(className);
-    },
-
-    removeClassName: function(element, className) {
-      if (element.classList)
-        return element.classList.remove(className);
-    },
-
     removePlaceHolder: function(field, event) {
       var self = this;
       
       if (event.keyCode !== 9)
-        self.removeClassName(field.element, 'placeholder');
+        field.element.classList.remove('placeholder');
     },
 
     validateLength: function(field) {
       var self = this;
 
-      if (field.length > field.maxLength)
-        self.applyClassName(field.element, 'invalid');
+      if (field.length > field.maxLength) 
+        field.element.classList.add('invalid');
       else
-        self.removeClassName(field.element, 'invalid')
+        field.element.classList.remove('invalid')
       return self;
     },
 
     validateRequire: function(field) {
       var self = this;
 
-      if (!field.length)
-        self.applyClassName(field.element, 'require');
+      if (!field.length) 
+        field.element.classList.add('require');
       else
-        self.removeClassName(field.element, 'require')
+        field.element.classList.remove('require')
       return self;
     },
 
@@ -246,7 +244,7 @@
       var self = this;
 
       if (!field.length)
-        self.applyClassName(field.element, 'placeholder');
+        field.element.classList.add('placeholder');
       return self;
     }
   }
