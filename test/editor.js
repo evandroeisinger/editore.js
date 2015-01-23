@@ -27,12 +27,13 @@ describe('editor.js', function() {
 
   it('return the correct fields from form', function() {
     var editor = new Editor(form);
-    expect(editor.fields.length).toBe(2);
-    expect(editor.fields[1].name).toBe('title');
-    expect(editor.fields[1].maxLength).toBe(10);
-    expect(editor.fields[0].element).toBe($j('p', form)[0]);
-    expect(editor.fields[1].placeholder).toBe('Title');
-    expect(editor.fields[0].placeholder).toBe(false);
+    expect(editor.fields().title).toBeDefined();
+    expect(editor.fields().title.name).toBe('title');
+    expect(editor.fields().title.maxLength).toBe(10);
+    expect(editor.fields().title.placeholder).toBe('Title');
+    expect(editor.fields().description).toBeDefined();
+    expect(editor.fields().description.element).toBe($j('p', form)[0]);
+    expect(editor.fields().description.placeholder).toBe(false);
   });
 
   it('return data attributes', function() {
@@ -42,11 +43,23 @@ describe('editor.js', function() {
     expect(Editor.prototype.getDataAttribute('data-field', field)).toBe(false);
   });
 
+  it('return fields', function() {
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  });
+
+  it('return fields values', function() {
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  });
+
+  it('return field value', function() {
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  });
+
   it('validate length', function() {
-    // karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
   });
 
   it('validate require', function() {
-    // karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
   });
 });
