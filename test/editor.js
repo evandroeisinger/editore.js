@@ -1,15 +1,13 @@
 describe('editor.js', function() {
-  var form, 
-      field;
+  var form;
 
   beforeEach(function() {
     form = $j([
       '<form>',
-        '<h1 data-field="title" data-length="10" data-placeholder="Title"></h1>',
-        '<p data-field="description"></p>',
+        '<h1 data-field="title" data-require="true" data-length="10" data-placeholder="Title"></h1>',
+        '<p data-field="description">Description</p>',
         '<p></p>',
       '</form>'].join())[0];
-    field = $j(['<h1 data-field="title" data-length="10" data-placeholder="Title" data-require="true"></h1>',].join())[0];
   });
 
   it('return a Editor instance', function() {
@@ -25,18 +23,8 @@ describe('editor.js', function() {
     expect(Editor.prototype.applyEditable(form).getAttribute('contenteditable')).toBeTruthy();
   });
 
-  it('return the correct fields from form', function() {
-    var editor = new Editor(form);
-    expect(editor.fields().title).toBeDefined();
-    expect(editor.fields().title.name).toBe('title');
-    expect(editor.fields().title.maxLength).toBe(10);
-    expect(editor.fields().title.placeholder).toBe('Title');
-    expect(editor.fields().description).toBeDefined();
-    expect(editor.fields().description.element).toBe($j('p', form)[0]);
-    expect(editor.fields().description.placeholder).toBe(false);
-  });
-
   it('return data attributes', function() {
+    var field = $j(['<h1 data-field="title" data-length="10" data-placeholder="Title" data-require="true"></h1>',].join())[0];
     expect(Editor.prototype.getDataAttribute('field', field, 'str', false)).toBe('title');
     expect(Editor.prototype.getDataAttribute('require', field, 'bol', false)).toBe(true);
     expect(Editor.prototype.getDataAttribute('length', field, 'int', false)).toBe(10);
@@ -45,31 +33,33 @@ describe('editor.js', function() {
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'int', 123)).toBe(123);
   });
 
-  it('return fields', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+  it('return the correct fields from form', function() {
+    var editor = new Editor(form);
+    expect(editor.fields().title).toBeDefined();
+    expect(editor.fields().title.name).toBe('title');
+    expect(editor.fields().title.maxLength).toBe(10);
+    expect(editor.fields().title.type).toBe('simple');
+    expect(editor.fields().title.require).toBe(true);
+    expect(editor.fields().title.placeholder).toBe('Title');
   });
 
   it('return fields values', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
-  });
-
-  it('return field value', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
-  });
-
-  it('validate length', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+    var editor = new Editor(form);
+    expect(editor.values().title).toBeDefined();
+    expect(editor.values().title.name).toBe('title');
+    expect(editor.values().title.valid).toBe(false);
+    expect(editor.values().title.value).toBe('');
+    expect(editor.values().title.length).toBe(0);
+    expect(editor.values().description).toBeDefined();
+    expect(editor.values().description.name).toBe('description');
+    expect(editor.values().description.valid).toBe(true);
+    expect(editor.values().description.value).toBe('Description');
+    expect(editor.values().description.length).toBe(11);
   });
 
   it('validate valid', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
-  });
-
-  it('validate fields', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
-  });
-
-  it('validate require', function() {
-    // length/regex - karma/phatomjs fail - https://github.com/karma-runner/karma/issues/629
+    var editor = new Editor(form);
+    expect(editor.values().title.valid).toBe(false);
+    expect(editor.values().description.valid).toBe(true);
   });
 });
