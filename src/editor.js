@@ -31,7 +31,7 @@
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
     // set handler event method
-    function setHandler(methods, data, context) {
+    function handler(methods, data, context) {
       return function(e) {
         for (var method in methods) (function (method) {
           method.call(context, data, e);
@@ -39,8 +39,8 @@
       }
     }
 
-    // return editor fields 
-    function getFields() {
+    // return editor fields NAME REVIEW!!!!
+    function fields() {
       var fields = {};
 
       for (var field in self.fields) (function(field) {
@@ -59,7 +59,7 @@
     }
 
     // return field values
-    function getValues() {
+    function values() {
       var values = {};
 
       for (var field in self.fields) (function(field) {
@@ -103,18 +103,20 @@
         keyup.push(self.validateRequire);
       }
 
-      field.element.addEventListener('click', setHandler(click, field, self));
-      field.element.addEventListener('focus', setHandler(focus, field, self));
-      field.element.addEventListener('keyup', setHandler(keyup, field, self));
-      field.element.addEventListener('keydown', setHandler(keydown, field, self));
+      field.element.addEventListener('click', handler(click, field, self));
+      field.element.addEventListener('focus', handler(focus, field, self));
+      field.element.addEventListener('keyup', handler(keyup, field, self));
+      field.element.addEventListener('keydown', handler(keydown, field, self));
 
-      self.calculateLength(field);
+      self
+        .calculateLength(field)
+        .validatePlaceholder(field);
 
     }(self.fields[field]))
 
     return {
-      fields   : getFields,
-      values   : getValues,
+      fields   : fields,
+      values   : values,
       validate : validate
     }
   }
