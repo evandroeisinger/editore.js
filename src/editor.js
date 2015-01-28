@@ -91,23 +91,24 @@
           keydown = [],
           keypress = [];
 
-      if (field.maxLength)
-        keyup.push(self.isOutOfBounds);
-      if (field.require)
-        keyup.push(self.isEmpty);
-
       if (field.type == self.types.SIMPLE) {
         click.push(self.binds.focus);
-        keyup.push(self.setPlaceholder, self.binds.focus);
         keydown.push(self.removePlaceHolder);
-        keypress.push(self.binds.disableBlocks);
+        keypress.push();
+        keyup.push(self.setLength, self.binds.disableBlocks, self.setPlaceholder, self.binds.focus);
       }
 
       if (field.type == self.types.RICH) {
         click.push(self.binds.blocksCreation, self.binds.focus);
-        keyup.push(self.setLength, self.setPlaceholder, self.binds.blocksCreation, self.binds.focus);
         keydown.push(self.removePlaceHolder);
+        keypress.push();
+        keyup.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
       }
+
+      if (field.maxLength)
+        keyup.push(self.isOutOfBounds);
+      if (field.require)
+        keyup.push(self.isEmpty);
 
       field.element.addEventListener('click', handler(click, field, self));
       field.element.addEventListener('keyup', handler(keyup, field, self));
@@ -130,8 +131,12 @@
     helpers: {
       currentNode: function() {
         var node = document.getSelection().anchorNode;
-        // if is child (3) return parent node else return node
-        return (node && node.nodeType === 3 ? node.parentNode : node);
+        
+        // if child is nodeText (type 3) return parent node else return node
+        if (node && node.nodeType === 3)
+          return node.parentNode
+        else
+          return node;
       },
     },
 
@@ -139,6 +144,9 @@
       focus: function (field, e) {
         var self = this,
             currentBlock;
+
+        if (!field.length)
+          return;
         // only this keys bind focus
         if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0)
           return;
@@ -173,10 +181,10 @@
       blocksCreation: function(field, e) {
         var self = this,
             node = self.helpers.currentNode();
-        if (field.element.children.length === 0 || (node && node.children.length === 0)) {
+
+        if ((node && node.children.length === 0 && e.which !== 8) || (!field.length && e.which === 1))
           document.execCommand('formatBlock', false, self.default.blockElement);
-        }
-      },
+      }
     },
 
     getFields: function(form) {
@@ -204,12 +212,15 @@
           focus       : false
           }
         }
+
+        // fix empty contenteditable input
+        fields[field].element.style.minHeight = '1em';
       }(form.children[i]));
 
       return fields;
     },
 
-    getCurrentBlock: function(currentNode) {
+    getCurrentBlock: function(currentNode, e) {
       var self = this,
           currentTagName = currentNode.tagName.toLowerCase();
       if (currentTagName == self.default.blockElement)
