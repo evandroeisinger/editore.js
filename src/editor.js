@@ -86,10 +86,10 @@
 
     // editor constructor
     for (var field in self.fields) (function (field) {
-      var click   = [self.binds.focus],
+      var click   = [],
           focus   = [],
           blur    = [],
-          keyup   = [self.binds.focus],
+          keyup   = [],
           keydown = [],
           keypress = [];
 
@@ -108,10 +108,15 @@
 
       if (field.type == self.types.SIMPLE) {
         keypress.push(self.binds.disableBlocks);
+        click.push(self.binds.focus);
+        keyup.push(self.binds.focus);
       }
 
       if (field.type == self.types.RICH) {
         keyup.push(self.binds.blocksCreation);
+        click.push(self.binds.blocksCreation);
+        click.push(self.binds.focus);
+        keyup.push(self.binds.focus);
       }
 
       field.element.addEventListener('blur', handler(blur, field, self));
@@ -169,16 +174,16 @@
         }
       },
 
-      disableBlocks: function (field, e) {
+      disableBlocks: function(field, e) {
         var self = this;
         if (e.which === 13 && field.type == self.types.SIMPLE)
           return e.preventDefault();
       },
 
-      blocksCreation: function (field) {
+      blocksCreation: function(field, e) {
         var self = this,
             node = self.helpers.currentNode();
-        if (node && node.children.length === 0) {
+        if (field.element.children.length === 0 || (node && node.children.length === 0)) {
           document.execCommand('formatBlock', false, self.default.blockElement);
         }
       },
@@ -216,9 +221,7 @@
 
     getCurrentBlock: function(currentNode) {
       var self = this,
-          // error when field its empty
           currentTagName = currentNode.tagName.toLowerCase();
-
       if (currentTagName == self.default.blockElement)
           return currentNode;
       
