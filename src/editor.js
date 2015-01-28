@@ -14,6 +14,10 @@
     if (!form || !form.nodeName)
       return new Error('No form was passed!');
 
+    // editor setup
+    self.default = {};
+    self.default.blockElement = 'p';
+
     // field types
     self.types        = {};
     self.types.RICH   = 'rich';
@@ -75,12 +79,19 @@
       return values;
     }
 
+    // destroy this editor
+    function destroy() {
+      console.log('Remove all eventListeners!');
+    }
+
     // editor constructor
     for (var field in self.fields) (function (field) {
-      var click   = [],
+      var click   = [self.binds.focus],
           focus   = [],
-          keyup   = [],
-          keydown = [];
+          blur    = [],
+          keyup   = [self.binds.focus],
+          keydown = [],
+          keypress = [];
 
       if (field.maxLength) {
         keyup.push(self.isOutOfBounds);
@@ -95,21 +106,84 @@
         keyup.push(self.isEmpty);
       }
 
+      if (field.type == self.types.SIMPLE) {
+        keypress.push(self.binds.disableBlocks);
+      }
+
+      if (field.type == self.types.RICH) {
+        keyup.push(self.binds.blocksCreation);
+      }
+
+      field.element.addEventListener('blur', handler(blur, field, self));
       field.element.addEventListener('click', handler(click, field, self));
       field.element.addEventListener('focus', handler(focus, field, self));
       field.element.addEventListener('keyup', handler(keyup, field, self));
       field.element.addEventListener('keydown', handler(keydown, field, self));
+      field.element.addEventListener('keypress', handler(keypress, field, self));
 
       self.applyPlaceholder(field);
     } (self.fields[field]));
 
     return {
-      fields : fields,
-      values : values,
+      fields: fields,
+      values: values,
+      destroy: destroy
     }
   }
 
   Editor.prototype = {
+    helpers: {
+      currentNode: function() {
+        var node = document.getSelection().anchorNode;
+        // if is child (3) return parent node else return node
+        return (node && node.nodeType === 3 ? node.parentNode : node);
+      },
+    },
+
+    binds: {
+      focus: function (field, e) {
+        var self = this,
+            currentBlock;
+        // only this keys bind focus
+        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0)
+          return;
+
+        for (var _field in self.fields) (function (_field) {
+          if (field.name == _field.name) {
+            field.element.classList.add('focus');
+            field.focus = true;
+            return;
+          } else {
+            _field.focus = false;
+            _field.element.classList.remove('focus');
+          }
+        } (self.fields[_field]));
+
+        if (field.type == self.types.RICH) {
+          field.currentBlock = self.getCurrentBlock(self.helpers.currentNode());
+          field.currentBlock.classList.add('focus');
+          for (var i = 0; i < field.element.children.length; i++) (function(block) {
+            if (block !== field.currentBlock)
+              block.classList.remove('focus');
+          }(field.element.children[i]));
+        }
+      },
+
+      disableBlocks: function (field, e) {
+        var self = this;
+        if (e.which === 13 && field.type == self.types.SIMPLE)
+          return e.preventDefault();
+      },
+
+      blocksCreation: function (field) {
+        var self = this,
+            node = self.helpers.currentNode();
+        if (node && node.children.length === 0) {
+          document.execCommand('formatBlock', false, self.default.blockElement);
+        }
+      },
+    },
+
     getFields: function(form) {
       var self    = this,
           fields  = {};
@@ -131,12 +205,24 @@
           element     : self.applyEditable(self.applyTabIndex(element, tabIndex)),
           value       : '',
           valid       : false,
-          length      : 0
+          length      : 0,
+          focus       : false
           }
         }
       }(form.children[i]));
 
       return fields;
+    },
+
+    getCurrentBlock: function(currentNode) {
+      var self = this,
+          // error when field its empty
+          currentTagName = currentNode.tagName.toLowerCase();
+
+      if (currentTagName == self.default.blockElement)
+          return currentNode;
+      
+      return self.getCurrentBlock(currentNode.parentNode);
     },
 
     getValue: function(field) {
@@ -194,9 +280,10 @@
 
     applyPlaceholder: function(field) {
       var self = this;
-
-      if (!self.getLength(field))
+      if (!self.getLength(field)) {
+        field.element.innerHTML = "";
         field.element.classList.add('placeholder');
+      }
       return self;
     },
 
