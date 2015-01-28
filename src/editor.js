@@ -87,46 +87,36 @@
     // editor constructor
     for (var field in self.fields) (function (field) {
       var click   = [],
-          focus   = [],
-          blur    = [],
           keyup   = [],
           keydown = [],
           keypress = [];
 
-      if (field.maxLength) {
+      if (field.maxLength)
         keyup.push(self.isOutOfBounds);
-      }
-
-      if (field.placeholder) {
-        keyup.push(self.applyPlaceholder);
-        keydown.push(self.removePlaceHolder);
-      }
-
-      if (field.require) {
+      if (field.require)
         keyup.push(self.isEmpty);
-      }
 
       if (field.type == self.types.SIMPLE) {
-        keypress.push(self.binds.disableBlocks);
         click.push(self.binds.focus);
-        keyup.push(self.binds.focus);
+        keyup.push(self.setPlaceholder, self.binds.focus);
+        keydown.push(self.removePlaceHolder);
+        keypress.push(self.binds.disableBlocks);
       }
 
       if (field.type == self.types.RICH) {
-        keyup.push(self.binds.blocksCreation);
-        click.push(self.binds.blocksCreation);
-        click.push(self.binds.focus);
-        keyup.push(self.binds.focus);
+        click.push(self.binds.blocksCreation, self.binds.focus);
+        keyup.push(self.setLength, self.setPlaceholder, self.binds.blocksCreation, self.binds.focus);
+        keydown.push(self.removePlaceHolder);
       }
 
-      field.element.addEventListener('blur', handler(blur, field, self));
       field.element.addEventListener('click', handler(click, field, self));
-      field.element.addEventListener('focus', handler(focus, field, self));
       field.element.addEventListener('keyup', handler(keyup, field, self));
       field.element.addEventListener('keydown', handler(keydown, field, self));
       field.element.addEventListener('keypress', handler(keypress, field, self));
 
-      self.applyPlaceholder(field);
+      self
+        .setLength(field)
+        .setPlaceholder(field);
     } (self.fields[field]));
 
     return {
@@ -262,28 +252,19 @@
       return value;
     },
 
-    getLength: function(field) {
+    setLength: function(field) {
       var self = this;
-
-      return field.element.innerHTML
+      
+      field.length = field.element.innerHTML
         .replace(self.regex.markup, '')
         .replace(self.regex.spaceAndEnbsp, '_')
         .length;
+      return self;
     },
 
-    applyEditable: function(element) {
-      element.setAttribute('contenteditable', true);
-      return element; 
-    },
-
-    applyTabIndex: function(element, index) {
-      element.setAttribute('tabindex', index + 1);
-      return element; 
-    },
-
-    applyPlaceholder: function(field) {
+    setPlaceholder: function(field) {
       var self = this;
-      if (!self.getLength(field)) {
+      if (!field.length) {
         field.element.innerHTML = "";
         field.element.classList.add('placeholder');
       }
@@ -297,10 +278,20 @@
         field.element.classList.remove('placeholder');
     },
 
+    applyEditable: function(element) {
+      element.setAttribute('contenteditable', true);
+      return element; 
+    },
+
+    applyTabIndex: function(element, index) {
+      element.setAttribute('tabindex', index + 1);
+      return element; 
+    },
+
     isOutOfBounds: function(field) {
       var self = this;
 
-      if (self.getLength(field) > field.maxLength) {
+      if (field.length > field.maxLength) {
         field.element.classList.add('invalid');
         return true;
       }
@@ -312,7 +303,7 @@
     isEmpty: function(field) {
       var self = this;
 
-      if (!self.getLength(field)) {
+      if (!field.length) {
         field.element.classList.add('require');
         return true;
       }
@@ -324,7 +315,7 @@
     isValid: function(field) {
       var self = this;
 
-      if (field.require && self.isEmpty(field))
+      if (field.require && self.length)
         return false;
       if (field.maxLength && self.isOutOfBounds(field))
         return false;
