@@ -23,10 +23,6 @@
     self.types.RICH   = 'rich';
     self.types.SIMPLE = 'simple';
 
-    // elements
-    self.form   = form;
-    self.fields = self.getFields(self.form);
-    
     // regex patterns
     self.regex            = {};
     self.regex.markup     = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
@@ -35,6 +31,10 @@
     self.regex.trim       = /\s+$/g;
     self.regex.lineBreak  = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
+
+    // elements
+    self.form   = form;
+    self.fields = self.getFields(self.form);
 
     // set handler event method
     function handler(methods, data, context) {
@@ -70,9 +70,9 @@
       for (var field in self.fields) (function(field) {
         values[field.name] = {
           name   : field.name,
+          length : field.length,
           value  : self.getValue(field),
-          length : self.getLength(field),
-          valid  : self.isValid(field)
+          valid  : self.validate(field)
         }
       }(self.fields[field]))
 
@@ -94,8 +94,8 @@
       if (field.type == self.types.SIMPLE) {
         click.push(self.binds.focus);
         keydown.push(self.removePlaceHolder);
-        keypress.push();
-        keyup.push(self.setLength, self.binds.disableBlocks, self.setPlaceholder, self.binds.focus);
+        keypress.push(self.binds.disableBlocks);
+        keyup.push(self.setLength, self.setPlaceholder, self.binds.focus);
       }
 
       if (field.type == self.types.RICH) {
@@ -106,18 +106,14 @@
       }
 
       if (field.maxLength)
-        keyup.push(self.isOutOfBounds);
+        keyup.push(self.validateMaxLength);
       if (field.require)
-        keyup.push(self.isEmpty);
+        keyup.push(self.validateRequire);
 
       field.element.addEventListener('click', handler(click, field, self));
       field.element.addEventListener('keyup', handler(keyup, field, self));
       field.element.addEventListener('keydown', handler(keydown, field, self));
       field.element.addEventListener('keypress', handler(keypress, field, self));
-
-      self
-        .setLength(field)
-        .setPlaceholder(field);
     } (self.fields[field]));
 
     return {
@@ -131,7 +127,7 @@
     helpers: {
       currentNode: function() {
         var node = document.getSelection().anchorNode;
-        
+
         // if child is nodeText (type 3) return parent node else return node
         if (node && node.nodeType === 3)
           return node.parentNode
@@ -173,8 +169,7 @@
       },
 
       disableBlocks: function(field, e) {
-        var self = this;
-        if (e.which === 13 && field.type == self.types.SIMPLE)
+        if (e.which === 13)
           return e.preventDefault();
       },
 
@@ -190,31 +185,28 @@
     getFields: function(form) {
       var self    = this,
           fields  = {};
-
       if (!form.children.length)
         return fields;
-
       for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
-        var field    = self.getDataAttribute('field', element, 'str', false),
-            tabIndex = (i - length);
-
+        var field = self.getDataAttribute('field', element, 'str', false);
         if (field) {
-          fields[field] = {
-          name        : field,
-          type        : self.getDataAttribute('type', element, 'str', self.types.SIMPLE),
-          maxLength   : self.getDataAttribute('length', element, 'int', false),
-          placeholder : self.getDataAttribute('placeholder', element, 'str', false),
-          require     : self.getDataAttribute('require', element, 'bol', false),
-          element     : self.applyEditable(self.applyTabIndex(element, tabIndex)),
-          value       : '',
-          valid       : false,
-          length      : 0,
-          focus       : false
-          }
+          fields[field]             = {};
+          fields[field].name        = field;
+          fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
+          fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
+          fields[field].placeholder = self.getDataAttribute('placeholder', element, 'str', false);
+          fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
+          fields[field].element     = element;
+          fields[field].value       = '';
+          fields[field].valid       = false;
+          fields[field].length      = 0;
+          fields[field].focus       = false;
+          // set elements
+          self.setEditable(fields[field].element);
+          self.setTabIndex(fields[field].element, i - length);
+          self.setLength(fields[field]);
+          self.setPlaceholder(fields[field]);
         }
-
-        // fix empty contenteditable input
-        fields[field].element.style.minHeight = '1em';
       }(form.children[i]));
 
       return fields;
@@ -289,17 +281,32 @@
         field.element.classList.remove('placeholder');
     },
 
-    applyEditable: function(element) {
+    setEditable: function(element) {
+      var self = this;
+
+      element.style.minHeight = '1em'; //fix empty contenteditable input
       element.setAttribute('contenteditable', true);
-      return element; 
+      return self; 
     },
 
-    applyTabIndex: function(element, index) {
+    setTabIndex: function(element, index) {
+      var self = this;
+
       element.setAttribute('tabindex', index + 1);
-      return element; 
+      return self; 
     },
 
-    isOutOfBounds: function(field) {
+    validate: function(field) {
+      var self = this;
+
+      if (field.require && !field.length)
+        return false;
+      if (field.maxLength && self.validateMaxLength(field))
+        return false;
+      return true;
+    },
+
+    validateMaxLength: function(field) {
       var self = this;
 
       if (field.length > field.maxLength) {
@@ -311,7 +318,7 @@
       return false;
     },
 
-    isEmpty: function(field) {
+    validateRequire: function(field) {
       var self = this;
 
       if (!field.length) {
@@ -322,16 +329,6 @@
       field.element.classList.remove('require');
       return false;
     },
-
-    isValid: function(field) {
-      var self = this;
-
-      if (field.require && self.length)
-        return false;
-      if (field.maxLength && self.isOutOfBounds(field))
-        return false;
-      return true;
-    }
   }
 
   return Editor;
