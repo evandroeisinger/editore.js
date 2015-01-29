@@ -34,9 +34,9 @@
     self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
-    // set editor form and fields 
-    self.form   = form;
-    self.fields = {};
+    // set editor form, fields and plugins
+    self.form             = form;
+    self.fields           = {};
 
     // set handler event method
     function handler(methods, data, context) {
@@ -81,9 +81,27 @@
       return values;
     }
 
+    // register plugins
+    function register(type, plugin) {
+      switch(type) {
+        case 'action':
+          for (var field in self.fields) (function(field) {
+            if (field.type == self.types.RICH) {
+              field.actionBar.plugins[plugin.name] = plugin;
+              // call register plugin method
+              field.actionBar.element.appendChild(field.actionBar.plugins[plugin.name].register(field, self));
+            }
+          }(self.fields[field]));
+          break;
+        case 'edition':
+          break;
+      }
+    }
+
     // destroy this editor
     function destroy() {
       console.log('Remove all eventListeners!');
+      console.log('Remove all plugins/eventListeners!');
     }
 
     // editor constructor
@@ -96,60 +114,70 @@
           keydownEvents  = [],
           keypressEvents = [];
 
-      if (field && placeholder) {
-        // set field
-        self.fields[field]             = {};
-        self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
-        self.fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
-        self.fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
-        self.fields[field].name        = field;
-        self.fields[field].placeholder = placeholder;
-        self.fields[field].element     = element;
-        self.fields[field].value       = '';
-        self.fields[field].valid       = false;
-        self.fields[field].length      = 0;
-        self.fields[field].focus       = false;
+      if (!(field) || !(placeholder))
+        return;
 
-        // set handlers
-        self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
-        self.fields[field].element.addEventListener('click', handler(clickEvents, self.fields[field], self));
-        self.fields[field].element.addEventListener('keydown', handler(keydownEvents, self.fields[field], self));
-        self.fields[field].element.addEventListener('keypress', handler(keypressEvents, self.fields[field], self));
-        self.fields[field].element.addEventListener('keyup', handler(keyupEvents, self.fields[field], self));
+      // set field
+      self.fields[field]             = {};
+      self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
+      self.fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
+      self.fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
+      self.fields[field].name        = field;
+      self.fields[field].placeholder = placeholder;
+      self.fields[field].element     = element;
+      self.fields[field].value       = '';
+      self.fields[field].valid       = false;
+      self.fields[field].length      = 0;
+      self.fields[field].focus       = false;
+      self.fields[field].actionBar = {};
+      self.fields[field].actionBar.plugins = {};
+      self.fields[field].actionBar.element = document.createElement('div');
+      // set actionBar element      
+      self.fields[field].actionBar.element.setAttribute('contenteditable', 'false');
+      self.fields[field].actionBar.element.setAttribute('id', 'actionBar');
 
-        // set elements
-        self.setEditable(self.fields[field].element);
-        self.setTabIndex(self.fields[field].element, (i - length) + 1);
-        self.setLength(self.fields[field]);
-        self.setPlaceholder(self.fields[field]);
+      // set handlers
+      self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
+      self.fields[field].element.addEventListener('click', handler(clickEvents, self.fields[field], self));
+      self.fields[field].element.addEventListener('keydown', handler(keydownEvents, self.fields[field], self));
+      self.fields[field].element.addEventListener('keypress', handler(keypressEvents, self.fields[field], self));
+      self.fields[field].element.addEventListener('keyup', handler(keyupEvents, self.fields[field], self));
 
-        // set listeners
-        switch(self.fields[field].type) {
-          case self.types.SIMPLE:
-            pasteEvents.push(self.binds.paste);
-            clickEvents.push(self.binds.focus);
-            keydownEvents.push(self.removePlaceHolder);
-            keypressEvents.push(self.binds.disableBlocks);
-            keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus);
-            break;
-          case self.types.RICH:
-            pasteEvents.push(self.binds.paste);
-            clickEvents.push(self.binds.blocksCreation, self.binds.focus);
-            keydownEvents.push(self.removePlaceHolder);
-            keypressEvents.push();
-            keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
-            break;
-        }
+      // set elements
+      self.setEditable(self.fields[field].element);
+      self.setTabIndex(self.fields[field].element, (i - length) + 1);
+      self.setLength(self.fields[field]);
+      self.setPlaceholder(self.fields[field]);
 
-        // set optional listeners
-        if (self.fields[field].maxLength) keyupEvents.push(self.validateMaxLength);
-        if (self.fields[field].require) keyupEvents.push(self.validateRequire);
+      // set listeners
+      switch(self.fields[field].type) {
+        case self.types.SIMPLE:
+          pasteEvents.push(self.binds.paste);
+          clickEvents.push(self.binds.focus);
+          keydownEvents.push(self.removePlaceHolder);
+          keypressEvents.push(self.binds.disableBlocks);
+          keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus);
+          break;
+        case self.types.RICH:
+          pasteEvents.push(self.binds.paste);
+          clickEvents.push(self.binds.blocksCreation, self.binds.focus);
+          keydownEvents.push(self.removePlaceHolder);
+          keypressEvents.push();
+          keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
+          break;
       }
+
+      // set optional listeners
+      if (self.fields[field].maxLength)
+        keyupEvents.push(self.validateMaxLength);
+      if (self.fields[field].require)
+        keyupEvents.push(self.validateRequire);
     } (form.children[i]));
 
     return {
       fields: fields,
       values: values,
+      register: register,
       destroy: destroy
     }
   }
@@ -177,6 +205,9 @@
         if (field.type == self.types.RICH) {
           field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
           field.currentBlock.classList.add('focus');
+          // set actionbar after the currentblock
+          self.setActionBar(field, field.currentBlock);
+
           for (var i = 0; i < field.element.children.length; i++) (function(block) {
             if (block !== field.currentBlock)
               block.classList.remove('focus');
@@ -185,12 +216,12 @@
       },
 
       paste: function (field, e) {
+        e.preventDefault();
+
         var self = this,
             html = [],
             blocks = e.clipboardData.getData('text/plain'),
             block, blockOpen, blockClose;
-
-        e.preventDefault();
 
         switch(field.type) {
           case self.types.SIMPLE:
@@ -289,6 +320,13 @@
         .replace(self.regex.markup, '')
         .replace(self.regex.spaceAndEnbsp, '_')
         .length;
+      return self;
+    },
+
+    setActionBar: function(field, block) {
+      var self = this;
+
+      field.element.insertBefore(field.actionBar.element, block.nextSibling);
       return self;
     },
 
