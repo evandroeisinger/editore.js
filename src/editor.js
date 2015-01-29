@@ -24,12 +24,14 @@
     self.types.SIMPLE = 'simple';
 
     // regex patterns
-    self.regex            = {};
-    self.regex.markup     = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
-    self.regex.enbsp      = /&nbsp;*/g;
-    self.regex.space      = /\s/g;
-    self.regex.trim       = /\s+$/g;
-    self.regex.lineBreak  = /(\r\n|\n|\r)[.]?/g; 
+    self.regex              = {};
+    self.regex.markup       = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
+    self.regex.enbsp        = /&nbsp;*/g;
+    self.regex.space        = /\s/g;
+    self.regex.spaces       = /\s+/g;
+    self.regex.trim         = /\s+$/g;
+    self.regex.lineBreak      = /[\r\n]/g; 
+    self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
     // elements
@@ -86,12 +88,14 @@
 
     // editor constructor
     for (var field in self.fields) (function (field) {
-      var click   = [],
+      var paste   = [],
+          click   = [],
           keyup   = [],
           keydown = [],
           keypress = [];
 
       if (field.type == self.types.SIMPLE) {
+        paste.push(self.binds.paste);
         click.push(self.binds.focus);
         keydown.push(self.removePlaceHolder);
         keypress.push(self.binds.disableBlocks);
@@ -99,6 +103,7 @@
       }
 
       if (field.type == self.types.RICH) {
+        paste.push(self.binds.paste);
         click.push(self.binds.blocksCreation, self.binds.focus);
         keydown.push(self.removePlaceHolder);
         keypress.push();
@@ -110,6 +115,7 @@
       if (field.require)
         keyup.push(self.validateRequire);
 
+      field.element.addEventListener('paste', handler(paste, field, self));
       field.element.addEventListener('click', handler(click, field, self));
       field.element.addEventListener('keyup', handler(keyup, field, self));
       field.element.addEventListener('keydown', handler(keydown, field, self));
@@ -164,6 +170,37 @@
               block.classList.remove('focus');
           }(field.element.children[i]));
         }
+      },
+
+      paste: function (field, e) {
+        var self = this,
+            html = [],
+            blocks = e.clipboardData.getData('text/plain'),
+            block, blockOpen, blockClose;
+
+        e.preventDefault();
+
+        switch(field.type) {
+          case self.types.SIMPLE:
+            html = [e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ')];
+            break;
+
+          case self.types.RICH:
+            blocks = e.clipboardData.getData('text/plain').split(self.regex.lineBreak);
+            blockOpen = ('<' + self.default.blockElement + '>');
+            blockClose = ('</' + self.default.blockElement + '>');
+
+            for (var block in blocks) (function(block) {
+                html.push(blockOpen, block, blockClose);
+            } (blocks[block])); 
+            break;
+
+          default:
+            html = [e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ')];
+            break;
+        }
+
+        document.execCommand('insertHTML', false, html.join(''));
       },
 
       disableBlocks: function(field, e) {
@@ -225,7 +262,7 @@
       var self = this;
 
       if (field.type = self.types.SIMPLE)
-        return field.element.innerText.replace(self.regex.lineBreak, ' ').replace(self.regex.trim, '');
+        return field.element.innerText.replace(self.regex.lineBreaks, ' ').replace(self.regex.trim, '');
       if (field.type = self.types.RICH)
         return field.element.innerHTML;
       return '';
