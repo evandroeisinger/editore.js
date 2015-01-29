@@ -1,20 +1,28 @@
 describe('editor.js', function() {
-  var form;
+  var form, 
+      editor;
 
   beforeEach(function() {
     form = $j([
       '<form>',
         '<h1 data-field="title" data-require="true" data-length="10" data-placeholder="Title"></h1>',
-        '<p data-field="description">Description</p>',
+        '<p data-field="description" data-placeholder="Description" data-type="rich">Description</p>',
+        '<p data-field="withoutPlaceholder"></p>',
         '<p></p>',
       '</form>'].join())[0];
+    editor = new Editor(form);
   });
 
   it('return a Editor instance', function() {
-    var editor = new Editor(form);
-    expect(editor.fields).toBeDefined(true);
-    expect(editor.values).toBeDefined(true);
-    expect(editor.destroy).toBeDefined(true);
+    expect(editor.fields).toBeDefined();
+    expect(editor.fields().title).toBeDefined();
+    expect(editor.fields().description).toBeDefined();
+    expect(editor.fields().withoutPlaceholder).toBeUndefined();
+    expect(editor.values).toBeDefined();
+    expect(editor.values().title).toBeDefined();
+    expect(editor.values().description).toBeDefined();
+    expect(editor.values().withoutPlaceholder).toBeUndefined();
+    expect(editor.destroy).toBeDefined();
   });
 
   it('return a Error when no form was passed', function() {
@@ -22,13 +30,20 @@ describe('editor.js', function() {
     expect(new Editor() instanceof Error).toBe(true);
   });
 
-  it('return the element editable', function() {
+  it('set element editable', function() {
     Editor.prototype.setEditable(form);
     expect(form.getAttribute('contenteditable')).toBeTruthy();
   });
 
+  it('set element tabIndex', function() {
+    Editor.prototype.setTabIndex(form, 0);
+    var tabIndex = form.getAttribute('tabindex');
+    expect(tabIndex).toBeTruthy();
+    expect(tabIndex).toBe('0');
+  });
+
   it('return data attributes', function() {
-    var field = $j(['<h1 data-field="title" data-length="10" data-placeholder="Title" data-require="true"></h1>',].join())[0];
+    var field = editor.fields().title.element;
     expect(Editor.prototype.getDataAttribute('field', field, 'str', false)).toBe('title');
     expect(Editor.prototype.getDataAttribute('require', field, 'bol', false)).toBe(true);
     expect(Editor.prototype.getDataAttribute('length', field, 'int', false)).toBe(10);
@@ -38,7 +53,6 @@ describe('editor.js', function() {
   });
 
   it('return the correct fields from form', function() {
-    var editor = new Editor(form);
     expect(editor.fields().title).toBeDefined();
     expect(editor.fields().title.name).toBe('title');
     expect(editor.fields().title.maxLength).toBe(10);
@@ -54,16 +68,17 @@ describe('editor.js', function() {
     expect(editor.values().title.valid).toBe(false);
     expect(editor.values().title.value).toBe('');
     expect(editor.values().title.length).toBe(0);
-    expect(editor.values().description).toBeDefined();
-    expect(editor.values().description.name).toBe('description');
-    expect(editor.values().description.valid).toBe(true);
-    expect(editor.values().description.value).toBe('Description');
-    expect(editor.values().description.length).toBe(11);
   });
 
-  it('validate valid', function() {
+  it('validate fields', function() {
     var editor = new Editor(form);
     expect(editor.values().title.valid).toBe(false);
     expect(editor.values().description.valid).toBe(true);
+  });
+
+  it('set placeholder', function() {
+    var editor = new Editor(form);
+    expect(editor.fields().title.element.classList.contains('placeholder')).toBeTruthy();
+    expect(editor.fields().description.element.classList.contains('placeholder')).toBeFalsy();
   });
 });
