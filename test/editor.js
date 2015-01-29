@@ -11,7 +11,10 @@ describe('editor.js', function() {
   });
 
   it('return a Editor instance', function() {
-    expect((new Editor(form)).fields).toBeDefined(true);
+    var editor = new Editor(form);
+    expect(editor.fields).toBeDefined(true);
+    expect(editor.values).toBeDefined(true);
+    expect(editor.destroy).toBeDefined(true);
   });
 
   it('return a Error when no form was passed', function() {
@@ -20,7 +23,8 @@ describe('editor.js', function() {
   });
 
   it('return the element editable', function() {
-    expect(Editor.prototype.applyEditable(form).getAttribute('contenteditable')).toBeTruthy();
+    Editor.prototype.setEditable(form);
+    expect(form.getAttribute('contenteditable')).toBeTruthy();
   });
 
   it('return data attributes', function() {
