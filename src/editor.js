@@ -11,7 +11,7 @@
   function Editor(form) {
     var self = this;
 
-    if (!form || !form.nodeName)
+    if (!form || !form.nodeName || !form.children.length)
       return new Error('No form was passed!');
 
     // editor setup
@@ -34,9 +34,9 @@
     self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
-    // elements
+    // set editor form and fields 
     self.form   = form;
-    self.fields = self.getFields(self.form);
+    self.fields = {};
 
     // set handler event method
     function handler(methods, data, context) {
@@ -87,40 +87,66 @@
     }
 
     // editor constructor
-    for (var field in self.fields) (function (field) {
-      var paste   = [],
-          click   = [],
-          keyup   = [],
-          keydown = [],
-          keypress = [];
+    for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
+      var field          = self.getDataAttribute('field', element, 'str', false),
+          placeholder    = self.getDataAttribute('placeholder', element, 'str', false),
+          pasteEvents    = [],
+          clickEvents    = [],
+          keyupEvents    = [],
+          keydownEvents  = [],
+          keypressEvents = [];
 
-      if (field.type == self.types.SIMPLE) {
-        paste.push(self.binds.paste);
-        click.push(self.binds.focus);
-        keydown.push(self.removePlaceHolder);
-        keypress.push(self.binds.disableBlocks);
-        keyup.push(self.setLength, self.setPlaceholder, self.binds.focus);
+      if (field && placeholder) {
+        // set field
+        self.fields[field]             = {};
+        self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
+        self.fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
+        self.fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
+        self.fields[field].name        = field;
+        self.fields[field].placeholder = placeholder;
+        self.fields[field].element     = element;
+        self.fields[field].value       = '';
+        self.fields[field].valid       = false;
+        self.fields[field].length      = 0;
+        self.fields[field].focus       = false;
+
+        // set handlers
+        self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
+        self.fields[field].element.addEventListener('click', handler(clickEvents, self.fields[field], self));
+        self.fields[field].element.addEventListener('keydown', handler(keydownEvents, self.fields[field], self));
+        self.fields[field].element.addEventListener('keypress', handler(keypressEvents, self.fields[field], self));
+        self.fields[field].element.addEventListener('keyup', handler(keyupEvents, self.fields[field], self));
+
+        // set elements
+        self.setEditable(self.fields[field].element);
+        self.setTabIndex(self.fields[field].element, (i - length) + 1);
+        self.setLength(self.fields[field]);
+        self.setPlaceholder(self.fields[field]);
+        self.setActionBar(self.fields[field]);
+
+        // set listeners
+        switch(self.fields[field].type) {
+          case self.types.SIMPLE:
+            pasteEvents.push(self.binds.paste);
+            clickEvents.push(self.binds.focus);
+            keydownEvents.push(self.removePlaceHolder);
+            keypressEvents.push(self.binds.disableBlocks);
+            keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus);
+            break;
+          case self.types.RICH:
+            pasteEvents.push(self.binds.paste);
+            clickEvents.push(self.binds.blocksCreation, self.binds.focus);
+            keydownEvents.push(self.removePlaceHolder);
+            keypressEvents.push();
+            keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
+            break;
+        }
+
+        // set optional listeners
+        if (self.fields[field].maxLength) keyupEvents.push(self.validateMaxLength);
+        if (self.fields[field].require) keyupEvents.push(self.validateRequire);
       }
-
-      if (field.type == self.types.RICH) {
-        paste.push(self.binds.paste);
-        click.push(self.binds.blocksCreation, self.binds.focus);
-        keydown.push(self.removePlaceHolder);
-        keypress.push();
-        keyup.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
-      }
-
-      if (field.maxLength)
-        keyup.push(self.validateMaxLength);
-      if (field.require)
-        keyup.push(self.validateRequire);
-
-      field.element.addEventListener('paste', handler(paste, field, self));
-      field.element.addEventListener('click', handler(click, field, self));
-      field.element.addEventListener('keyup', handler(keyup, field, self));
-      field.element.addEventListener('keydown', handler(keydown, field, self));
-      field.element.addEventListener('keypress', handler(keypress, field, self));
-    } (self.fields[field]));
+    } (form.children[i]));
 
     return {
       fields: fields,
@@ -130,22 +156,9 @@
   }
 
   Editor.prototype = {
-    helpers: {
-      currentNode: function() {
-        var node = document.getSelection().anchorNode;
-
-        // if child is nodeText (type 3) return parent node else return node
-        if (node && node.nodeType === 3)
-          return node.parentNode
-        else
-          return node;
-      },
-    },
-
     binds: {
       focus: function (field, e) {
-        var self = this,
-            currentBlock;
+        var self = this;
 
         // only this keys bind focus
         if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0 || (!field.length && e.type !== 'click'))
@@ -163,7 +176,7 @@
         } (self.fields[_field]));
 
         if (field.type == self.types.RICH) {
-          field.currentBlock = self.getCurrentBlock(self.helpers.currentNode());
+          field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
           field.currentBlock.classList.add('focus');
           for (var i = 0; i < field.element.children.length; i++) (function(block) {
             if (block !== field.currentBlock)
@@ -210,43 +223,21 @@
 
       blocksCreation: function(field, e) {
         var self = this,
-            node = self.helpers.currentNode();
+            node = self.getCurrentNode();
 
         if ((node && node.children.length === 0 && e.which !== 8) || (!field.length && e.which === 1))
           document.execCommand('formatBlock', false, self.default.blockElement);
       }
     },
 
-    getFields: function(form) {
-      var self    = this,
-          fields  = {};
-      if (!form.children.length)
-        return fields;
-      for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
-        var field       = self.getDataAttribute('field', element, 'str', false),
-            placeholder = self.getDataAttribute('placeholder', element, 'str', false);
+    getCurrentNode: function() {
+      var node = document.getSelection().anchorNode;
 
-        if (field && placeholder) {
-          fields[field]             = {};
-          fields[field].name        = field;
-          fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
-          fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
-          fields[field].placeholder = placeholder;
-          fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
-          fields[field].element     = element;
-          fields[field].value       = '';
-          fields[field].valid       = false;
-          fields[field].length      = 0;
-          fields[field].focus       = false;
-          // set elements
-          self.setEditable(fields[field].element);
-          self.setTabIndex(fields[field].element, (i - length) + 1);
-          self.setLength(fields[field]);
-          self.setPlaceholder(fields[field]);
-        }
-      }(form.children[i]));
-
-      return fields;
+      // if child is nodeText (type 3) return parent node else return node
+      if (node && node.nodeType === 3)
+        return node.parentNode
+      else
+        return node;
     },
 
     getCurrentBlock: function(currentNode, e) {
