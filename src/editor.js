@@ -141,10 +141,8 @@
         var self = this,
             currentBlock;
 
-        if (!field.length)
-          return;
         // only this keys bind focus
-        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0)
+        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0 || (!field.length && e.type !== 'click'))
           return;
 
         for (var _field in self.fields) (function (_field) {
