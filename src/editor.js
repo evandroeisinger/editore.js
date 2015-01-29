@@ -122,7 +122,6 @@
         self.setTabIndex(self.fields[field].element, (i - length) + 1);
         self.setLength(self.fields[field]);
         self.setPlaceholder(self.fields[field]);
-        self.setActionBar(self.fields[field]);
 
         // set listeners
         switch(self.fields[field].type) {
