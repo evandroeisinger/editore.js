@@ -188,13 +188,15 @@
       if (!form.children.length)
         return fields;
       for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
-        var field = self.getDataAttribute('field', element, 'str', false);
-        if (field) {
+        var field       = self.getDataAttribute('field', element, 'str', false),
+            placeholder = self.getDataAttribute('placeholder', element, 'str', false);
+
+        if (field && placeholder) {
           fields[field]             = {};
           fields[field].name        = field;
           fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
           fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
-          fields[field].placeholder = self.getDataAttribute('placeholder', element, 'str', false);
+          fields[field].placeholder = placeholder;
           fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
           fields[field].element     = element;
           fields[field].value       = '';
@@ -203,7 +205,7 @@
           fields[field].focus       = false;
           // set elements
           self.setEditable(fields[field].element);
-          self.setTabIndex(fields[field].element, i - length);
+          self.setTabIndex(fields[field].element, (i - length) + 1);
           self.setLength(fields[field]);
           self.setPlaceholder(fields[field]);
         }
@@ -257,7 +259,7 @@
 
     setLength: function(field) {
       var self = this;
-      
+
       field.length = field.element.innerHTML
         .replace(self.regex.markup, '')
         .replace(self.regex.spaceAndEnbsp, '_')
@@ -292,7 +294,7 @@
     setTabIndex: function(element, index) {
       var self = this;
 
-      element.setAttribute('tabindex', index + 1);
+      element.setAttribute('tabindex', index);
       return self; 
     },
 
