@@ -82,18 +82,25 @@
     }
 
     // register plugins
-    function register(type, plugin) {
+    function register(type, Plugin) {
       switch(type) {
         case 'action':
           for (var field in self.fields) (function(field) {
             if (field.type == self.types.RICH) {
+              var plugin = new Plugin(field, editor);
               field.actionBar.plugins[plugin.name] = plugin;
-              // call register plugin method
-              field.actionBar.element.appendChild(field.actionBar.plugins[plugin.name].register(field, self));
+              field.actionBar.element.appendChild(plugin.register());
             }
-          }(self.fields[field]));
+          } (self.fields[field]));
           break;
         case 'edition':
+          for (var field in self.fields) (function(field) {
+            if (field.type == self.types.RICH) {
+                var plugin = new Plugin(field, editor);
+                field.editionBar.plugins[plugin.name] = plugin;
+                field.editionBar.element.appendChild(plugin.register());
+            }
+          }(self.fields[field]));
           break;
       }
     }
@@ -110,6 +117,7 @@
           placeholder    = self.getDataAttribute('placeholder', element, 'str', false),
           pasteEvents    = [],
           clickEvents    = [],
+          mouseUpEvents  = [],
           keyupEvents    = [],
           keydownEvents  = [],
           keypressEvents = [];
@@ -132,13 +140,21 @@
       self.fields[field].actionBar = {};
       self.fields[field].actionBar.plugins = {};
       self.fields[field].actionBar.element = document.createElement('div');
+      self.fields[field].editionBar = {};
+      self.fields[field].editionBar.plugins = {};
+      self.fields[field].editionBar.element = document.createElement('div');
+
       // set actionBar element      
       self.fields[field].actionBar.element.setAttribute('contenteditable', 'false');
       self.fields[field].actionBar.element.setAttribute('id', 'actionBar');
+      // set editionBar element      
+      self.fields[field].editionBar.element.setAttribute('contenteditable', 'false');
+      self.fields[field].editionBar.element.setAttribute('id', 'editionBar');
 
       // set handlers
       self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
       self.fields[field].element.addEventListener('click', handler(clickEvents, self.fields[field], self));
+      self.fields[field].element.addEventListener('mouseup', handler(mouseUpEvents, self.fields[field], self));
       self.fields[field].element.addEventListener('keydown', handler(keydownEvents, self.fields[field], self));
       self.fields[field].element.addEventListener('keypress', handler(keypressEvents, self.fields[field], self));
       self.fields[field].element.addEventListener('keyup', handler(keyupEvents, self.fields[field], self));
@@ -154,14 +170,15 @@
         case self.types.SIMPLE:
           pasteEvents.push(self.binds.paste);
           clickEvents.push(self.binds.focus);
-          keydownEvents.push(self.removePlaceHolder);
+          keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push(self.binds.disableBlocks);
           keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus);
           break;
         case self.types.RICH:
           pasteEvents.push(self.binds.paste);
           clickEvents.push(self.binds.blocksCreation, self.binds.focus);
-          keydownEvents.push(self.removePlaceHolder);
+          mouseUpEvents.push(self.binds.selection);
+          keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push();
           keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
           break;
@@ -184,6 +201,9 @@
 
   Editor.prototype = {
     binds: {
+      selection: function(field, e) {
+      },
+
       focus: function (field, e) {
         var self = this;
         // only this keys bind focus
@@ -199,20 +219,20 @@
             _field.focus = false;
             _field.element.classList.remove('focus');
           }
-        } (self.fields[_field]));
 
-        if (field.type == self.types.RICH) {
-          // set current block focus
-          field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
-          field.currentBlock.classList.add('focus');
-          // set actionbar after the currentblock
-          self.setActionBar(field, field.currentBlock);
-          // remove focus
-          for (var i = 0; i < field.element.children.length; i++) (function(block) {
-            if (block !== field.currentBlock)
-              block.classList.remove('focus');
-          }(field.element.children[i]));
-        }
+          if (field.type == self.types.RICH && self.getCurrentBlock(self.getCurrentNode()) !== field.currentBlock) {
+            // remove block focus
+            for (var i = 0; i < field.element.children.length; i++) (function(block) {
+              if (block !== field.currentBlock)
+                block.classList.remove('focus');
+            }(field.element.children[i]));
+            // set current block focus
+            field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
+            field.currentBlock.classList.add('focus');
+            // set actionbar after the currentblock
+            self.setActionBar(field, field.currentBlock);
+          }
+        } (self.fields[_field]));
       },
 
       paste: function (field, e) {
@@ -325,9 +345,11 @@
 
     setActionBar: function(field, block) {
       var self = this;
-
       field.element.insertBefore(field.actionBar.element, block.nextSibling);
       return self;
+    },
+
+    setEditionBar: function(field) {
     },
 
     setPlaceholder: function(field) {
@@ -339,7 +361,7 @@
       return self;
     },
 
-    removePlaceHolder: function(field, event) {
+    unsetPlaceholder: function(field, event) {
       var self = this;
       
       if (event.keyCode !== 9)
