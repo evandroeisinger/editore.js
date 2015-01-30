@@ -29,26 +29,16 @@
     <h1 class="field" data-field="title" data-require="true" data-type="simple" data-placeholder="Title" data-length="20"></h1>
     <p class="field" data-field="description" data-type="simple" data-placeholder="Description" data-length="120"></p>
     <article class="field" data-field="articleBody" data-type="rich" data-placeholder="Article Body"></article>
+    <article class="field" data-field="articleBodie" data-type="rich" data-placeholder="Article Body"></article>
   </form>
 
   <script type="text/javascript" src="../src/editor.js"></script>
+  <script type="text/javascript" src="../src/plugins/action-plugin-sample.js"></script>
   <script type="text/javascript">
     var form   = document.getElementById('form'),
-        editor = new Editor(form),
-        plugin = {
-          name: 'image',
-          register: function(field, editor) {
-            this.button = document.createElement('button');
-            this.button.addEventListener('click', this.test);
-            return this.button;
-          },
-          test: function(e) {
-            e.preventDefault();
-            console.log(e);
-          }
-        }
+        editor = new Editor(form);
 
-    editor.register('action', plugin);
+    editor.register('action', ActionPluginSample);
   </script>
 </body>
 </html>
