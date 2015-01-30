@@ -186,15 +186,14 @@
     binds: {
       focus: function (field, e) {
         var self = this;
-
         // only this keys bind focus
-        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0 || (!field.length && e.type !== 'click'))
+        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0 || (!field.length && e.type !== 'click') || e.target == field.actionBar.element)
           return;
 
         for (var _field in self.fields) (function (_field) {
           if (field.name == _field.name) {
-            field.element.classList.add('focus');
             field.focus = true;
+            field.element.classList.add('focus');
             return;
           } else {
             _field.focus = false;
@@ -203,11 +202,12 @@
         } (self.fields[_field]));
 
         if (field.type == self.types.RICH) {
+          // set current block focus
           field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
           field.currentBlock.classList.add('focus');
           // set actionbar after the currentblock
           self.setActionBar(field, field.currentBlock);
-
+          // remove focus
           for (var i = 0; i < field.element.children.length; i++) (function(block) {
             if (block !== field.currentBlock)
               block.classList.remove('focus');
