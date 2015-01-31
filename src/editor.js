@@ -206,32 +206,25 @@
 
       focus: function (field, e) {
         var self = this;
-        // only this keys bind focus
-        if ([13,40,38,39,37,8,46,9,1].indexOf(e.which) < 0 || (!field.length && e.type !== 'click') || e.target == field.actionBar.element)
+        
+        if (!field.length || e.target == field.actionBar.element)
           return;
 
-        for (var _field in self.fields) (function (_field) {
-          if (field.name == _field.name) {
-            field.focus = true;
-            field.element.classList.add('focus');
-            return;
-          } else {
-            _field.focus = false;
-            _field.element.classList.remove('focus');
-          }
+        field.focus = true;
+        field.element.classList.add('focus');
 
-          if (field.type == self.types.RICH && self.getCurrentBlock(self.getCurrentNode()) !== field.currentBlock) {
-            // remove block focus
-            for (var i = 0; i < field.element.children.length; i++) (function(block) {
-              if (block !== field.currentBlock)
-                block.classList.remove('focus');
-            }(field.element.children[i]));
-            // set current block focus
-            field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
-            field.currentBlock.classList.add('focus');
-            // set actionbar after the currentblock
-            self.setActionBar(field, field.currentBlock);
-          }
+        if (field.type == self.types.RICH)
+          self.setActionBar(field);
+        
+        for (var _field in self.fields) (function (_field) {
+          if (_field.name == field.name)
+            return;
+          // remove focus
+          _field.focus = false;
+          _field.element.classList.remove('focus');
+          // remove actionBar
+          if (_field.type == self.types.RICH && _field.currentBlock)
+            self.unsetActionBar(_field);
         } (self.fields[_field]));
       },
 
@@ -343,9 +336,10 @@
       return self;
     },
 
-    setActionBar: function(field, block) {
+    setActionBar: function(field) {
       var self = this;
-      field.element.insertBefore(field.actionBar.element, block.nextSibling);
+      field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
+      field.element.insertBefore(field.actionBar.element, field.currentBlock.nextSibling);
       return self;
     },
 
@@ -358,6 +352,15 @@
         field.element.innerHTML = "";
         field.element.classList.add('placeholder');
       }
+      return self;
+    },
+
+    unsetActionBar: function(field) {
+      var self = this;
+      
+      if (field.element.children.length)
+        field.element.removeChild(field.actionBar.element);
+      field.currentBlock = null;
       return self;
     },
 
