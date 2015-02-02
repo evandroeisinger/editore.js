@@ -23,6 +23,7 @@ describe('editor.js', function() {
     expect(editor.values().description).toBeDefined();
     expect(editor.values().withoutPlaceholder).toBeUndefined();
     expect(editor.destroy).toBeDefined();
+    expect(editor.register).toBeDefined();
   });
 
   it('return a Error when no form was passed', function() {
