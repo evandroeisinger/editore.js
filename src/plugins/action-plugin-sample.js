@@ -1,14 +1,14 @@
 (function(global, plugin) {
   if (typeof define === 'function' && define.amd)
-    define('ActionPlugin', [], plugin);
+    define('sample-action-plugin', ['editor-js'], plugin);
   else if (typeof exports !== 'undefined')
-    exports.ActionPluginSample = plugin();
+    exports.SampleActionPlugin = plugin();
   else
-    global.ActionPluginSample = plugin();
+    global.SampleActionPlugin = plugin();
 }(window, function() {
   'use strict';
 
-  function ActionPluginSample(field, editor) {
+  function SampleActionPlugin(field, editor) {
       var self = this;
 
       self.name = 'ActionPlugin';
@@ -24,7 +24,7 @@
       });
     }
 
-    ActionPluginSample.prototype = {
+    SampleActionPlugin.prototype = {
       register: function() {
         return this.button;
       },
@@ -35,6 +35,6 @@
       }
     }
 
-  return ActionPluginSample;
+  return SampleActionPlugin;
 }));
     
