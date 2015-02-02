@@ -123,7 +123,7 @@
           keypressEvents = [];
 
       if (!(field) || !(placeholder))
-        return;
+        return new Error('data-field or data-placeholder are not defined!');
 
       // set field
       self.fields[field]             = {};
