@@ -17,11 +17,10 @@
       self.editor = editor;
       self.button = document.createElement('button');
 
-      self.button.innerText = 'button';
+      self.button.innerText = 'action';
       self.button.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log(self.field);
       });
     }
 
@@ -35,6 +34,7 @@
       },
 
       destroy: function() {
+        console.log('editon')
         return;
       }
     }

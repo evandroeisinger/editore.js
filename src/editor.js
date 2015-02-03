@@ -72,10 +72,10 @@
 
       for (var field in self.fields) (function(field) {
         values[field.name] = {
-          name   : field.name,
-          length : field.length,
-          value  : self.getValue(field),
-          valid  : self.validate(field)
+          name: field.name,
+          length: field.length,
+          value: self.getValue(field),
+          valid: self.validate(field)
         }
       }(self.fields[field]))
 
@@ -84,7 +84,6 @@
 
     // register plugins
     function register(type, Plugin) {
-
       for (var field in self.fields) (function(field) {
         if (field.type == self.types.RICH) {
           var plugin = new Plugin(field.plugins[type], field, self);
@@ -96,8 +95,23 @@
 
     // destroy this editor
     function destroy() {
-      console.log('Remove all eventListeners!');
-      console.log('Remove all plugins/eventListeners!');
+      for (var field in self.fields) (function(field) {
+        // set handlers
+        field.element.removeEventListener('paste', field.events.paste);
+        field.element.removeEventListener('click', field.events.click);
+        field.element.removeEventListener('mouseup', field.events.mouseup);
+        field.element.removeEventListener('keydown', field.events.keydown);
+        field.element.removeEventListener('keypress', field.events.keypress);
+        field.element.removeEventListener('keyup', field.events.keyup);
+
+        if (field.type == self.types.RICH) {
+          for (var plugin in field.plugins) (function(plugin) {
+            for (var method in plugin.methods) (function(method) {
+              method.destroy();
+            } (plugin.methods[method]));
+          } (field.plugins[plugin]));
+        }
+      } (self.fields[field]));
     }
 
     // editor constructor
@@ -126,6 +140,7 @@
       self.fields[field].valid       = false;
       self.fields[field].length      = 0;
       self.fields[field].focus       = false;
+      self.fields[field].events      = {};
       self.fields[field].plugins     = {
         action: {
           element: document.createElement('div'),
@@ -139,28 +154,14 @@
         }
       };
 
-      // set actionBar element      
+      // set actionB element      
       self.fields[field].plugins.action.element.setAttribute('contenteditable', 'false');
       self.fields[field].plugins.action.element.setAttribute('id', 'actionBar');
       // set editionBar element      
       self.fields[field].plugins.edition.element.setAttribute('contenteditable', 'false');
       self.fields[field].plugins.edition.element.setAttribute('id', 'editionBar');
 
-      // set handlers
-      self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
-      self.fields[field].element.addEventListener('click', handler(clickEvents, self.fields[field], self));
-      self.fields[field].element.addEventListener('mouseup', handler(mouseUpEvents, self.fields[field], self));
-      self.fields[field].element.addEventListener('keydown', handler(keydownEvents, self.fields[field], self));
-      self.fields[field].element.addEventListener('keypress', handler(keypressEvents, self.fields[field], self));
-      self.fields[field].element.addEventListener('keyup', handler(keyupEvents, self.fields[field], self));
-
-      // set elements
-      self.setEditable(self.fields[field].element);
-      self.setTabIndex(self.fields[field].element, (i - length) + 1);
-      self.setLength(self.fields[field]);
-      self.setPlaceholder(self.fields[field]);
-
-      // set listeners
+      // set field listeners
       switch(self.fields[field].type) {
         case self.types.SIMPLE:
           pasteEvents.push(self.binds.paste);
@@ -178,12 +179,31 @@
           keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
           break;
       }
-
       // set optional listeners
       if (self.fields[field].maxLength)
         keyupEvents.push(self.validateMaxLength);
       if (self.fields[field].require)
         keyupEvents.push(self.validateRequire);
+
+      // set elements
+      self.setEditable(self.fields[field].element);
+      self.setTabIndex(self.fields[field].element, (i - length) + 1);
+      self.setLength(self.fields[field]);
+      self.setPlaceholder(self.fields[field]);
+      // set handlers    
+      self.fields[field].events.paste = handler(pasteEvents, self.fields[field], self),
+      self.fields[field].events.click = handler(clickEvents, self.fields[field], self),
+      self.fields[field].events.mouseup = handler(mouseUpEvents, self.fields[field], self),
+      self.fields[field].events.keydown = handler(keydownEvents, self.fields[field], self),
+      self.fields[field].events.keypress = handler(keypressEvents, self.fields[field], self),
+      self.fields[field].events.keyup = handler(keyupEvents, self.fields[field], self)
+      // atach handlers
+      self.fields[field].element.addEventListener('paste', self.fields[field].events.paste);
+      self.fields[field].element.addEventListener('click', self.fields[field].events.click);
+      self.fields[field].element.addEventListener('mouseup', self.fields[field].events.mouseup);
+      self.fields[field].element.addEventListener('keydown', self.fields[field].events.keydown);
+      self.fields[field].element.addEventListener('keypress', self.fields[field].events.keypress);
+      self.fields[field].element.addEventListener('keyup', self.fields[field].events.keyup);
     } (form.children[i]));
 
     return {
@@ -363,13 +383,13 @@
     setAction: function(field) {
       var self = this,
           currentBlock = self.getCurrentBlock(self.getCurrentNode());
-          
+
       if (field.currentBlock !== currentBlock) {
         field.currentBlock = currentBlock;
          for (var method in field.plugins.action.methods) (function(method) {
               method.beforeShow();
         } (field.plugins.action.methods[method]));
-      // set action toolbar
+        // set action toolbar
         field.element.insertBefore(field.plugins.action.element, field.currentBlock.nextSibling);
       }
       return self;
