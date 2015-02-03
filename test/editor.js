@@ -31,6 +31,11 @@ describe('editor.js', function() {
     expect(editor.fields().description.actionBar.plugins.SampleActionPlugin instanceof SampleActionPlugin).toBe(true);
   });
 
+  it('register a new editionBar plugin', function() {
+    editor.register('edition', SampleEditionPlugin);
+    expect(editor.fields().description.editionBar.plugins.SampleEditionPlugin instanceof SampleEditionPlugin).toBe(true);
+  });
+
   it('return a Error when no form was passed', function() {
     expect(new Editor('not a html element') instanceof Error).toBe(true);
     expect(new Editor() instanceof Error).toBe(true);

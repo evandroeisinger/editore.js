@@ -59,7 +59,8 @@
           type        : field.type,
           require     : field.require,
           placeholder : field.placeholder,
-          actionBar   : field.actionBar
+          actionBar   : field.actionBar,
+          editionBar   : field.editionBar
         }
       }(self.fields[field]))
 
@@ -97,7 +98,7 @@
         case 'edition':
           for (var field in self.fields) (function(field) {
             if (field.type == self.types.RICH) {
-                var plugin = new Plugin(field, editor);
+                var plugin = new Plugin(field, self);
                 field.editionBar.plugins[plugin.name] = plugin;
                 field.editionBar.element.appendChild(plugin.register());
             }
@@ -144,6 +145,7 @@
       self.fields[field].editionBar = {};
       self.fields[field].editionBar.plugins = {};
       self.fields[field].editionBar.element = document.createElement('div');
+      self.fields[field].editionBar.status = false;
 
       // set actionBar element      
       self.fields[field].actionBar.element.setAttribute('contenteditable', 'false');
@@ -203,12 +205,34 @@
   Editor.prototype = {
     binds: {
       selection: function(field, e) {
+        var selection = window.getSelection(),
+            range,
+            position,
+            top,
+            left;
+
+        if (selection.type == 'Range' && !field.editionBar.status) {
+          document.body.appendChild(field.editionBar.element);
+          range = selection.getRangeAt(0);
+          position = range.getBoundingClientRect();
+          top = position.top + window.pageYOffset - field.editionBar.element.offsetHeight;
+          left = ((position.left + position.right) / 2) - (field.editionBar.element.offsetWidth / 2);
+          field.editionBar.element.style.top =  top + 'px';
+          field.editionBar.element.style.left = left + 'px';
+          field.editionBar.status = true;
+          return;
+        }
+
+        if(field.editionBar.status) {
+          document.body.removeChild(field.editionBar.element);
+          field.editionBar.status = false;
+        }
       },
 
       focus: function (field, e) {
         var self = this;
         
-        if (!field.length || e.target == field.actionBar.element)
+        if (!field.length || e.target == field.actionBar.element || e.target == field.editionBar.element)
           return;
 
         field.focus = true;
@@ -287,9 +311,9 @@
     getCurrentBlock: function(currentNode, e) {
       var self = this,
           currentTagName = currentNode.tagName.toLowerCase();
+      
       if (currentTagName == self.default.blockElement)
           return currentNode;
-      
       return self.getCurrentBlock(currentNode.parentNode);
     },
 
@@ -356,6 +380,21 @@
       return self;
     },
 
+    setEditable: function(element) {
+      var self = this;
+
+      element.style.minHeight = '1em'; //fix empty contenteditable input
+      element.setAttribute('contenteditable', true);
+      return self; 
+    },
+
+    setTabIndex: function(element, index) {
+      var self = this;
+
+      element.setAttribute('tabindex', index);
+      return self; 
+    },
+
     unsetActionBar: function(field) {
       var self = this;
       
@@ -372,20 +411,6 @@
         field.element.classList.remove('placeholder');
     },
 
-    setEditable: function(element) {
-      var self = this;
-
-      element.style.minHeight = '1em'; //fix empty contenteditable input
-      element.setAttribute('contenteditable', true);
-      return self; 
-    },
-
-    setTabIndex: function(element, index) {
-      var self = this;
-
-      element.setAttribute('tabindex', index);
-      return self; 
-    },
 
     validate: function(field) {
       var self = this;

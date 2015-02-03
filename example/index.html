@@ -22,6 +22,22 @@
 
     .invalid { border: 1px solid red; }
     .require { border: 1px solid orange; }
+
+    #editionBar {
+      position: absolute;
+      background: black;
+    }
+
+    #editionBar:after {
+      content: '';
+      position: absolute;
+      border-color: black transparent transparent transparent;
+      border-width: .25em .25em 0 .25em;
+      border-style: solid;
+      bottom: -.25em;
+      left: 50%;
+      margin-left: -.25em;
+    }
   </style>
 </head>
 <body>
@@ -34,11 +50,13 @@
 
   <script type="text/javascript" src="../src/editor.js"></script>
   <script type="text/javascript" src="../src/plugins/action-plugin-sample.js"></script>
+  <script type="text/javascript" src="../src/plugins/edition-plugin-sample.js"></script>
   <script type="text/javascript">
     var form   = document.getElementById('form'),
         editor = new Editor(form);
 
     editor.register('action', SampleActionPlugin);
+    editor.register('edition', SampleActionPlugin);
   </script>
 </body>
 </html>
