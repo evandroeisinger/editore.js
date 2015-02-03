@@ -17,7 +17,7 @@
       self.editor = editor;
       self.button = document.createElement('button');
 
-      self.button.innerText = 'edition';
+      self.button.innerText = 'action-plugin';
       self.button.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -30,11 +30,10 @@
       },
 
       beforeShow: function() {
-        console.log('before', this.name);
+        return;
       },
 
       destroy: function() {
-        console.log('action')
         return;
       },
 
