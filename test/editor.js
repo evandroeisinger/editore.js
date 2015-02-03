@@ -28,12 +28,12 @@ describe('editor.js', function() {
 
   it('register a new actionBar plugin', function() {
     editor.register('action', SampleActionPlugin);
-    expect(editor.fields().description.actionBar.plugins.SampleActionPlugin instanceof SampleActionPlugin).toBe(true);
+    expect(editor.fields().description.plugins.action.methods.SampleActionPlugin instanceof SampleActionPlugin).toBe(true);
   });
 
   it('register a new editionBar plugin', function() {
     editor.register('edition', SampleEditionPlugin);
-    expect(editor.fields().description.editionBar.plugins.SampleEditionPlugin instanceof SampleEditionPlugin).toBe(true);
+    expect(editor.fields().description.plugins.edition.methods.SampleEditionPlugin instanceof SampleEditionPlugin).toBe(true);
   });
 
   it('return a Error when no form was passed', function() {

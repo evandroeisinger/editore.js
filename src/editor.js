@@ -59,8 +59,7 @@
           type        : field.type,
           require     : field.require,
           placeholder : field.placeholder,
-          actionBar   : field.actionBar,
-          editionBar   : field.editionBar
+          plugins     : field.plugins,
         }
       }(self.fields[field]))
 
@@ -85,26 +84,14 @@
 
     // register plugins
     function register(type, Plugin) {
-      switch(type) {
-        case 'action':
-          for (var field in self.fields) (function(field) {
-            if (field.type == self.types.RICH) {
-              var plugin = new Plugin(field, self);
-              field.actionBar.plugins[plugin.name] = plugin;
-              field.actionBar.element.appendChild(plugin.register());
-            }
-          } (self.fields[field]));
-          break;
-        case 'edition':
-          for (var field in self.fields) (function(field) {
-            if (field.type == self.types.RICH) {
-                var plugin = new Plugin(field, self);
-                field.editionBar.plugins[plugin.name] = plugin;
-                field.editionBar.element.appendChild(plugin.register());
-            }
-          }(self.fields[field]));
-          break;
-      }
+
+      for (var field in self.fields) (function(field) {
+        if (field.type == self.types.RICH) {
+          var plugin = new Plugin(field, self);
+          field.plugins[type].methods[plugin.name] = plugin;
+          field.plugins[type].element.appendChild(plugin.register());
+        }
+      } (self.fields[field]));
     }
 
     // destroy this editor
@@ -139,20 +126,25 @@
       self.fields[field].valid       = false;
       self.fields[field].length      = 0;
       self.fields[field].focus       = false;
-      self.fields[field].actionBar = {};
-      self.fields[field].actionBar.plugins = {};
-      self.fields[field].actionBar.element = document.createElement('div');
-      self.fields[field].editionBar = {};
-      self.fields[field].editionBar.plugins = {};
-      self.fields[field].editionBar.element = document.createElement('div');
-      self.fields[field].editionBar.status = false;
+      self.fields[field].plugins     = {
+        action: {
+          element: document.createElement('div'),
+          methods: {}
+        },
+
+        edition: {
+          element: document.createElement('div'),
+          methods: {},
+          status: false
+        }
+      };
 
       // set actionBar element      
-      self.fields[field].actionBar.element.setAttribute('contenteditable', 'false');
-      self.fields[field].actionBar.element.setAttribute('id', 'actionBar');
+      self.fields[field].plugins.action.element.setAttribute('contenteditable', 'false');
+      self.fields[field].plugins.action.element.setAttribute('id', 'actionBar');
       // set editionBar element      
-      self.fields[field].editionBar.element.setAttribute('contenteditable', 'false');
-      self.fields[field].editionBar.element.setAttribute('id', 'editionBar');
+      self.fields[field].plugins.edition.element.setAttribute('contenteditable', 'false');
+      self.fields[field].plugins.edition.element.setAttribute('id', 'editionBar');
 
       // set handlers
       self.fields[field].element.addEventListener('paste', handler(pasteEvents, self.fields[field], self));
@@ -211,35 +203,35 @@
             top,
             left;
 
-        if (selection.type == 'Range' && !field.editionBar.status) {
-          document.body.appendChild(field.editionBar.element);
+        if (selection.type == 'Range' && !field.plugins.edition.status) {
+          document.body.appendChild(field.plugins.edition.element);
           range = selection.getRangeAt(0);
           position = range.getBoundingClientRect();
-          top = position.top + window.pageYOffset - field.editionBar.element.offsetHeight;
-          left = ((position.left + position.right) / 2) - (field.editionBar.element.offsetWidth / 2);
-          field.editionBar.element.style.top =  top + 'px';
-          field.editionBar.element.style.left = left + 'px';
-          field.editionBar.status = true;
+          top = position.top + window.pageYOffset - field.plugins.edition.element.offsetHeight;
+          left = ((position.left + position.right) / 2) - (field.plugins.edition.element.offsetWidth / 2);
+          field.plugins.edition.element.style.top =  top + 'px';
+          field.plugins.edition.element.style.left = left + 'px';
+          field.plugins.edition.status = true;
           return;
         }
 
-        if(field.editionBar.status) {
-          document.body.removeChild(field.editionBar.element);
-          field.editionBar.status = false;
+        if(field.plugins.edition.status) {
+          document.body.removeChild(field.plugins.edition.element);
+          field.plugins.edition.status = false;
         }
       },
 
       focus: function (field, e) {
         var self = this;
         
-        if (!field.length || e.target == field.actionBar.element || e.target == field.editionBar.element)
+        if (!field.length || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
           return;
 
         field.focus = true;
         field.element.classList.add('focus');
 
         if (field.type == self.types.RICH)
-          self.setActionBar(field);
+          self.setAction(field);
         
         for (var _field in self.fields) (function (_field) {
           if (_field.name == field.name)
@@ -249,7 +241,7 @@
           _field.element.classList.remove('focus');
           // remove actionBar
           if (_field.type == self.types.RICH && _field.currentBlock)
-            self.unsetActionBar(_field);
+            self.unsetAction(_field);
         } (self.fields[_field]));
       },
 
@@ -361,10 +353,10 @@
       return self;
     },
 
-    setActionBar: function(field) {
+    setAction: function(field) {
       var self = this;
       field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
-      field.element.insertBefore(field.actionBar.element, field.currentBlock.nextSibling);
+      field.element.insertBefore(field.plugins.action.element, field.currentBlock.nextSibling);
       return self;
     },
 
@@ -395,11 +387,11 @@
       return self; 
     },
 
-    unsetActionBar: function(field) {
+    unsetAction: function(field) {
       var self = this;
       
       if (field.element.children.length)
-        field.element.removeChild(field.actionBar.element);
+        field.element.removeChild(field.plugins.action.element);
       field.currentBlock = null;
       return self;
     },
@@ -410,7 +402,6 @@
       if (event.keyCode !== 9)
         field.element.classList.remove('placeholder');
     },
-
 
     validate: function(field) {
       var self = this;
