@@ -154,12 +154,14 @@
         }
       };
 
-      // set actionB element      
+      // set action element      
       self.fields[field].plugins.action.element.setAttribute('contenteditable', 'false');
       self.fields[field].plugins.action.element.setAttribute('id', 'actionBar');
-      // set editionBar element      
+      // set edition element      
       self.fields[field].plugins.edition.element.setAttribute('contenteditable', 'false');
       self.fields[field].plugins.edition.element.setAttribute('id', 'editionBar');
+      self.fields[field].plugins.edition.element.style.position = 'absolute';
+      self.fields[field].plugins.edition.element.style.zIndex = 9999;
 
       // set field listeners
       switch(self.fields[field].type) {

@@ -36,8 +36,6 @@
       destroy: function() {
         return;
       },
-
-
     }
 
   return SampleActionPlugin;
