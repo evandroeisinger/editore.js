@@ -8,10 +8,11 @@
 }(window, function() {
   'use strict';
 
-  function SampleActionPlugin(field, editor) {
+  function SampleActionPlugin(plugin, field, editor) {
       var self = this;
 
       self.name = 'SampleActionPlugin';
+      self.plugin = plugin;
       self.field = field;
       self.editor = editor;
       self.button = document.createElement('button');
@@ -29,10 +30,15 @@
         return this.button;
       },
 
+      beforeShow: function() {
+        console.log('before', this.name);
+      },
+
       destroy: function() {
-        console.log(this);
-        return this.button;
-      }
+        return;
+      },
+
+
     }
 
   return SampleActionPlugin;

@@ -87,7 +87,7 @@
 
       for (var field in self.fields) (function(field) {
         if (field.type == self.types.RICH) {
-          var plugin = new Plugin(field, self);
+          var plugin = new Plugin(field.plugins[type], field, self);
           field.plugins[type].methods[plugin.name] = plugin;
           field.plugins[type].element.appendChild(plugin.register());
         }
@@ -197,13 +197,18 @@
   Editor.prototype = {
     binds: {
       selection: function(field, e) {
-        var selection = window.getSelection(),
+        var self = this,
+            selection = window.getSelection(),
             range,
             position,
             top,
             left;
 
         if (selection.type == 'Range' && !field.plugins.edition.status) {
+          for (var method in field.plugins.edition.methods) (function(method) {
+            method.beforeShow();
+          } (field.plugins.edition.methods[method]));
+          // show edition toolbar
           document.body.appendChild(field.plugins.edition.element);
           range = selection.getRangeAt(0);
           position = range.getBoundingClientRect();
@@ -212,19 +217,21 @@
           field.plugins.edition.element.style.top =  top + 'px';
           field.plugins.edition.element.style.left = left + 'px';
           field.plugins.edition.status = true;
+          field.plugins.edition.selection = selection;
           return;
         }
 
         if(field.plugins.edition.status) {
           document.body.removeChild(field.plugins.edition.element);
           field.plugins.edition.status = false;
+          field.plugins.edition.selection = false;
         }
       },
 
       focus: function (field, e) {
         var self = this;
-        
-        if (!field.length || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
+
+        if ([91,40,38,37,39,13,1].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
           return;
 
         field.focus = true;
@@ -354,9 +361,17 @@
     },
 
     setAction: function(field) {
-      var self = this;
-      field.currentBlock = self.getCurrentBlock(self.getCurrentNode());
-      field.element.insertBefore(field.plugins.action.element, field.currentBlock.nextSibling);
+      var self = this,
+          currentBlock = self.getCurrentBlock(self.getCurrentNode());
+          
+      if (field.currentBlock !== currentBlock) {
+        field.currentBlock = currentBlock;
+         for (var method in field.plugins.action.methods) (function(method) {
+              method.beforeShow();
+        } (field.plugins.action.methods[method]));
+      // set action toolbar
+        field.element.insertBefore(field.plugins.action.element, field.currentBlock.nextSibling);
+      }
       return self;
     },
 
