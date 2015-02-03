@@ -58,7 +58,8 @@
           maxLength   : field.maxLength,
           type        : field.type,
           require     : field.require,
-          placeholder : field.placeholder
+          placeholder : field.placeholder,
+          actionBar   : field.actionBar
         }
       }(self.fields[field]))
 
@@ -87,7 +88,7 @@
         case 'action':
           for (var field in self.fields) (function(field) {
             if (field.type == self.types.RICH) {
-              var plugin = new Plugin(field, editor);
+              var plugin = new Plugin(field, self);
               field.actionBar.plugins[plugin.name] = plugin;
               field.actionBar.element.appendChild(plugin.register());
             }

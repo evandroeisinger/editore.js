@@ -11,7 +11,7 @@
   function SampleActionPlugin(field, editor) {
       var self = this;
 
-      self.name = 'ActionPlugin';
+      self.name = 'SampleActionPlugin';
       self.field = field;
       self.editor = editor;
       self.button = document.createElement('button');

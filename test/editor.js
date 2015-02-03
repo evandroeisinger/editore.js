@@ -26,6 +26,11 @@ describe('editor.js', function() {
     expect(editor.register).toBeDefined();
   });
 
+  it('register a new actionBar plugin', function() {
+    editor.register('action', SampleActionPlugin);
+    expect(editor.fields().description.actionBar.plugins.SampleActionPlugin instanceof SampleActionPlugin).toBe(true);
+  });
+
   it('return a Error when no form was passed', function() {
     expect(new Editor('not a html element') instanceof Error).toBe(true);
     expect(new Editor() instanceof Error).toBe(true);
