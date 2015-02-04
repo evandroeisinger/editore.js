@@ -123,7 +123,8 @@
           mouseUpEvents  = [],
           keyupEvents    = [],
           keydownEvents  = [],
-          keypressEvents = [];
+          keypressEvents = [],
+          DOMNodeInsertedEvents = [];
 
       if (!(field) || !(placeholder))
         return new Error('data-field or data-placeholder are not defined!');
@@ -179,6 +180,7 @@
           keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push();
           keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
+          DOMNodeInsertedEvents.push(self.unsetSpan);
           break;
       }
       // set optional listeners
@@ -193,12 +195,13 @@
       self.setLength(self.fields[field]);
       self.setPlaceholder(self.fields[field]);
       // set handlers    
-      self.fields[field].events.paste = handler(pasteEvents, self.fields[field], self),
-      self.fields[field].events.click = handler(clickEvents, self.fields[field], self),
-      self.fields[field].events.mouseup = handler(mouseUpEvents, self.fields[field], self),
-      self.fields[field].events.keydown = handler(keydownEvents, self.fields[field], self),
-      self.fields[field].events.keypress = handler(keypressEvents, self.fields[field], self),
-      self.fields[field].events.keyup = handler(keyupEvents, self.fields[field], self)
+      self.fields[field].events.paste = handler(pasteEvents, self.fields[field], self);
+      self.fields[field].events.click = handler(clickEvents, self.fields[field], self);
+      self.fields[field].events.mouseup = handler(mouseUpEvents, self.fields[field], self);
+      self.fields[field].events.keydown = handler(keydownEvents, self.fields[field], self);
+      self.fields[field].events.keypress = handler(keypressEvents, self.fields[field], self);
+      self.fields[field].events.keyup = handler(keyupEvents, self.fields[field], self);
+      self.fields[field].events.DOMNodeInserted = handler(DOMNodeInsertedEvents, self.fields[field], self)
       // atach handlers
       self.fields[field].element.addEventListener('paste', self.fields[field].events.paste);
       self.fields[field].element.addEventListener('click', self.fields[field].events.click);
@@ -206,6 +209,7 @@
       self.fields[field].element.addEventListener('keydown', self.fields[field].events.keydown);
       self.fields[field].element.addEventListener('keypress', self.fields[field].events.keypress);
       self.fields[field].element.addEventListener('keyup', self.fields[field].events.keyup);
+      self.fields[field].element.addEventListener('DOMNodeInserted', self.fields[field].events.DOMNodeInserted);
     } (form.children[i]));
 
     return {
@@ -253,7 +257,7 @@
       focus: function (field, e) {
         var self = this;
 
-        if ([91,40,38,37,39,13,1].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
+        if ([91,40,38,37,39,13,1, 8].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
           return;
 
         field.focus = true;
@@ -329,7 +333,7 @@
         return node;
     },
 
-    getCurrentBlock: function(currentNode, e) {
+    getCurrentBlock: function(currentNode) {
       var self = this,
           currentTagName = currentNode.tagName.toLowerCase();
       
@@ -422,6 +426,19 @@
 
       element.setAttribute('tabindex', index);
       return self; 
+    },
+
+    // https://code.google.com/p/chromium/issues/detail?id=226941
+    unsetSpan: function(field, event) {
+      var self = this,
+          span = event.target;
+
+      if (span.nodeType == 3 || span.tagName.toLowerCase() !== "span" ) 
+        return;
+
+      span.parentNode.insertBefore(document.createTextNode(span.innerText), span);
+      span.parentNode.removeChild(span);
+      return self;
     },
 
     unsetAction: function(field) {
