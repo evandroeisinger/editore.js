@@ -24,6 +24,7 @@ describe('editor.js', function() {
     expect(editor.values().withoutPlaceholder).toBeUndefined();
     expect(editor.destroy).toBeDefined();
     expect(editor.register).toBeDefined();
+    expect(editor.subscribe).toBeDefined();
   });
 
   it('register a new actionBar plugin', function() {

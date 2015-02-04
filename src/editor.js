@@ -18,10 +18,14 @@
     self.default = {};
     self.default.blockElement = 'p';
 
+    // editor events
+    self.events = {};
+    self.events.CHANGE = [];
+
     // field types
-    self.types        = {};
-    self.types.RICH   = 'rich';
-    self.types.SIMPLE = 'simple';
+    self.fieldTypes         = {};
+    self.fieldTypes.RICH    = 'rich';
+    self.fieldTypes.SIMPLE  = 'simple';
 
     // regex patterns
     self.regex              = {};
@@ -85,7 +89,7 @@
     // register plugins
     function register(type, Plugin) {
       for (var field in self.fields) (function(field) {
-        if (field.type == self.types.RICH) {
+        if (field.type == self.fieldTypes.RICH) {
           var plugin = new Plugin(field.plugins[type], field, self);
           field.plugins[type].methods[plugin.name] = plugin;
           field.plugins[type].element.appendChild(plugin.register());
@@ -93,7 +97,7 @@
       } (self.fields[field]));
     }
 
-    // destroy this editor
+    // destroy editor listeners
     function destroy() {
       for (var field in self.fields) (function(field) {
         // set handlers
@@ -104,7 +108,7 @@
         field.element.removeEventListener('keypress', field.events.keypress);
         field.element.removeEventListener('keyup', field.events.keyup);
 
-        if (field.type == self.types.RICH) {
+        if (field.type == self.fieldTypes.RICH) {
           for (var plugin in field.plugins) (function(plugin) {
             for (var method in plugin.methods) (function(method) {
               method.destroy();
@@ -112,6 +116,14 @@
           } (field.plugins[plugin]));
         }
       } (self.fields[field]));
+    }
+
+    // register callbacks to editor events
+    function subscribe(type, callback) {
+      if (!self.events[type])
+        return new Error('cant subscribe to a invalid event!');
+
+      self.events[type].push(callback);
     }
 
     // editor constructor
@@ -131,7 +143,7 @@
 
       // set field
       self.fields[field]             = {};
-      self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.types.SIMPLE);
+      self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.fieldTypes.SIMPLE);
       self.fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
       self.fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
       self.fields[field].name        = field;
@@ -166,20 +178,20 @@
 
       // set field listeners
       switch(self.fields[field].type) {
-        case self.types.SIMPLE:
-          pasteEvents.push(self.binds.paste);
+        case self.fieldTypes.SIMPLE:
+          pasteEvents.push(self.binds.paste, self.binds.change);
           clickEvents.push(self.binds.focus);
           keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push(self.binds.disableBlocks);
-          keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus);
+          keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus, self.binds.change);
           break;
-        case self.types.RICH:
-          pasteEvents.push(self.binds.paste);
+        case self.fieldTypes.RICH:
+          pasteEvents.push(self.binds.paste, self.binds.change);
           clickEvents.push(self.binds.blocksCreation, self.binds.focus);
           mouseUpEvents.push(self.binds.selection);
           keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push();
-          keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder);
+          keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder, self.binds.change);
           DOMNodeInsertedEvents.push(self.unsetSpan);
           break;
       }
@@ -216,7 +228,8 @@
       fields: fields,
       values: values,
       register: register,
-      destroy: destroy
+      destroy: destroy,
+      subscribe: subscribe
     }
   }
 
@@ -254,7 +267,7 @@
         }
       },
 
-      focus: function (field, e) {
+      focus: function(field, e) {
         var self = this;
 
         if ([91,40,38,37,39,13,1, 8].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == field.plugins.action.element || e.target == field.plugins.edition.element)
@@ -263,7 +276,7 @@
         field.focus = true;
         field.element.classList.add('focus');
 
-        if (field.type == self.types.RICH)
+        if (field.type == self.fieldTypes.RICH)
           self.setAction(field);
         
         for (var _field in self.fields) (function (_field) {
@@ -273,7 +286,7 @@
           _field.focus = false;
           _field.element.classList.remove('focus');
           // remove actionBar
-          if (_field.type == self.types.RICH && _field.currentBlock)
+          if (_field.type == self.fieldTypes.RICH && _field.currentBlock)
             self.unsetAction(_field);
         } (self.fields[_field]));
       },
@@ -287,11 +300,11 @@
             block, blockOpen, blockClose;
 
         switch(field.type) {
-          case self.types.SIMPLE:
+          case self.fieldTypes.SIMPLE:
             html = [e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ')];
             break;
 
-          case self.types.RICH:
+          case self.fieldTypes.RICH:
             blocks = e.clipboardData.getData('text/plain').split(self.regex.lineBreak);
             blockOpen = ('<' + self.default.blockElement + '>');
             blockClose = ('</' + self.default.blockElement + '>');
@@ -309,6 +322,13 @@
         document.execCommand('insertHTML', false, html.join(''));
       },
 
+      change: function(field, e) {
+        var self = this;
+        
+        if (['paste'].indexOf(e.type) >= 0 || [40,38,37,39,1,9,16,18,27].indexOf(e.which) < 0)
+          self.emmit('CHANGE', field);
+      },
+
       disableBlocks: function(field, e) {
         if (e.which === 13)
           return e.preventDefault();
@@ -320,7 +340,7 @@
 
         if ((node && node.children.length === 0 && e.which !== 8) || (!field.length && e.which === 1))
           document.execCommand('formatBlock', false, self.default.blockElement);
-      }
+      },
     },
 
     getCurrentNode: function() {
@@ -345,9 +365,9 @@
     getValue: function(field) {
       var self = this;
 
-      if (field.type = self.types.SIMPLE)
+      if (field.type = self.fieldTypes.SIMPLE)
         return field.element.innerText.replace(self.regex.lineBreaks, ' ').replace(self.regex.trim, '');
-      if (field.type = self.types.RICH)
+      if (field.type = self.fieldTypes.RICH)
         return field.element.innerHTML;
       return '';
     },
@@ -489,6 +509,19 @@
 
       field.element.classList.remove('require');
       return false;
+    },
+
+    emmit: function(event, data) {
+      var self = this;
+
+      if (!self.events[event])
+        return new Error('cant emmit a invalid event!');
+
+      for (var callback in self.events[event]) (function(callback) {
+        callback.call(self, data);
+      } (self.events[event][callback]));
+
+      return self;
     },
   }
 
