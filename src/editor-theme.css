@@ -16,7 +16,6 @@ h3 {
 .field { 
   border: none; 
   outline: none;
-  position: relative;
 }
 
 .field p {
@@ -26,11 +25,11 @@ h3 {
   line-height: 1.5em;
 }
 
-#actionBar {
+#insertComponent {
   margin: 0 0 1em 0;
 }
 
-#actionBar button {
+#insertComponent button {
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
@@ -40,7 +39,7 @@ h3 {
   cursor: pointer;
 }
 
-#editionBar button {
+#editionComponent button {
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
@@ -50,12 +49,12 @@ h3 {
   cursor: pointer;
 }
 
-#editionBar button:hover, #actionBar button:hover {
+#editionComponent button:hover, #insertComponent button:hover {
   background: black;
   color: white;
 }
 
-#editionBar:after {
+#editionComponent:after {
   content: '';
   position: absolute;
   border-color: black transparent transparent transparent;
