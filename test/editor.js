@@ -27,31 +27,19 @@ describe('editor.js', function() {
     expect(editor.subscribe).toBeDefined();
   });
 
-  it('register a new actionBar plugin', function() {
-    editor.register('action', SampleActionPlugin);
-    expect(editor.fields().description.plugins.action.methods.SampleActionPlugin instanceof SampleActionPlugin).toBe(true);
-  });
-
-  it('register a new editionBar plugin', function() {
-    editor.register('edition', SampleEditionPlugin);
-    expect(editor.fields().description.plugins.edition.methods.SampleEditionPlugin instanceof SampleEditionPlugin).toBe(true);
-  });
-
   it('return a Error when no form was passed', function() {
     expect(new Editor('not a html element') instanceof Error).toBe(true);
     expect(new Editor() instanceof Error).toBe(true);
   });
 
   it('set element editable', function() {
-    Editor.prototype.setEditable(form);
-    expect(form.getAttribute('contenteditable')).toBeTruthy();
+    expect(editor.fields().title.element.getAttribute('contenteditable')).toBeTruthy();
+    expect(editor.fields().description.element.getAttribute('contenteditable')).toBeTruthy();
   });
 
   it('set element tabIndex', function() {
-    Editor.prototype.setTabIndex(form, 0);
-    var tabIndex = form.getAttribute('tabindex');
-    expect(tabIndex).toBeTruthy();
-    expect(tabIndex).toBe('0');
+    expect(editor.fields().title.element.getAttribute('tabIndex')).toBe('1');
+    expect(editor.fields().description.element.getAttribute('tabIndex')).toBe('2');
   });
 
   it('return data attributes', function() {
