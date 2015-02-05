@@ -19,8 +19,8 @@
     self.default.blockElement = 'p';
 
     // editor events
-    self.events = {};
-    self.events.CHANGE = [];
+    self.eventsTypes = {};
+    self.eventsTypes.INPUT = [];
 
     // field types
     self.fieldTypes         = {};
@@ -61,7 +61,7 @@
           element     : field.element,
           maxLength   : field.maxLength,
           type        : field.type,
-          require     : field.require,
+          require     : field.required,
           placeholder : field.placeholder,
           plugins     : field.plugins,
         }
@@ -120,10 +120,11 @@
 
     // register callbacks to editor events
     function subscribe(type, callback) {
-      if (!self.events[type])
+      type = type.toUpperCase();
+      if (!self.fieldTypes[type])
         return new Error('cant subscribe to a invalid event!');
 
-      self.events[type].push(callback);
+      self.fieldTypes[type].push(callback);
     }
 
     // editor constructor
@@ -145,7 +146,7 @@
       self.fields[field]             = {};
       self.fields[field].type        = self.getDataAttribute('type', element, 'str', self.fieldTypes.SIMPLE);
       self.fields[field].maxLength   = self.getDataAttribute('length', element, 'int', false);
-      self.fields[field].require     = self.getDataAttribute('require', element, 'bol', false);
+      self.fields[field].required     = self.getDataAttribute('required', element, 'bol', false);
       self.fields[field].name        = field;
       self.fields[field].placeholder = placeholder;
       self.fields[field].element     = element;
@@ -179,26 +180,26 @@
       // set field listeners
       switch(self.fields[field].type) {
         case self.fieldTypes.SIMPLE:
-          pasteEvents.push(self.binds.paste, self.binds.change);
+          pasteEvents.push(self.binds.paste, self.binds.input);
           clickEvents.push(self.binds.focus);
           keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push(self.binds.disableBlocks);
-          keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus, self.binds.change);
+          keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus, self.binds.input);
           break;
         case self.fieldTypes.RICH:
-          pasteEvents.push(self.binds.paste, self.binds.change);
+          pasteEvents.push(self.binds.paste, self.binds.input);
           clickEvents.push(self.binds.blocksCreation, self.binds.focus);
           mouseUpEvents.push(self.binds.selection);
           keydownEvents.push(self.unsetPlaceholder);
           keypressEvents.push();
-          keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder, self.binds.change);
+          keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder, self.binds.input);
           DOMNodeInsertedEvents.push(self.unsetSpan);
           break;
       }
       // set optional listeners
       if (self.fields[field].maxLength)
         keyupEvents.push(self.validateMaxLength);
-      if (self.fields[field].require)
+      if (self.fields[field].required)
         keyupEvents.push(self.validateRequire);
 
       // set elements
@@ -322,11 +323,9 @@
         document.execCommand('insertHTML', false, html.join(''));
       },
 
-      change: function(field, e) {
+      input: function(field, e) {
         var self = this;
-        
-        if (['paste'].indexOf(e.type) >= 0 || [40,38,37,39,1,9,16,18,27].indexOf(e.which) < 0)
-          self.emmit('CHANGE', field);
+        self.emmit('INPUT', field);
       },
 
       disableBlocks: function(field, e) {
@@ -480,7 +479,7 @@
     validate: function(field) {
       var self = this;
 
-      if (field.require && !field.length)
+      if (field.required && !field.length)
         return false;
       if (field.maxLength && self.validateMaxLength(field))
         return false;
@@ -503,11 +502,11 @@
       var self = this;
 
       if (!field.length) {
-        field.element.classList.add('require');
+        field.element.classList.add('required');
         return true;
       }
 
-      field.element.classList.remove('require');
+      field.element.classList.remove('required');
       return false;
     },
 

@@ -5,7 +5,7 @@ describe('editor.js', function() {
   beforeEach(function() {
     form = $j([
       '<form>',
-        '<h1 data-field="title" data-require="true" data-length="10" data-placeholder="Title"></h1>',
+        '<h1 data-field="title" data-required="true" data-length="10" data-placeholder="Title"></h1>',
         '<p data-field="description" data-placeholder="Description" data-type="rich">Description</p>',
         '<p data-field="withoutPlaceholder"></p>',
         '<p></p>',
@@ -57,7 +57,7 @@ describe('editor.js', function() {
   it('return data attributes', function() {
     var field = editor.fields().title.element;
     expect(Editor.prototype.getDataAttribute('field', field, 'str', false)).toBe('title');
-    expect(Editor.prototype.getDataAttribute('require', field, 'bol', false)).toBe(true);
+    expect(Editor.prototype.getDataAttribute('required', field, 'bol', false)).toBe(true);
     expect(Editor.prototype.getDataAttribute('length', field, 'int', false)).toBe(10);
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'str', 'defaultValue')).toBe('defaultValue');
     expect(Editor.prototype.getDataAttribute('defaultValue', field, 'bol', true)).toBe(true);
@@ -69,7 +69,7 @@ describe('editor.js', function() {
     expect(editor.fields().title.name).toBe('title');
     expect(editor.fields().title.maxLength).toBe(10);
     expect(editor.fields().title.type).toBe('simple');
-    expect(editor.fields().title.require).toBe(true);
+    expect(editor.fields().title.required).toBe(true);
     expect(editor.fields().title.placeholder).toBe('Title');
   });
 

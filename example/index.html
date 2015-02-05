@@ -27,6 +27,9 @@
 
     editor.register('action', SampleActionPlugin);
     editor.register('edition', SampleEditionPlugin);
+    editor.subscribe('input', function(field) {
+      console.log(field);
+    });
   </script>
 </body>
 </html>
