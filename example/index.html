@@ -28,7 +28,7 @@
     editor.register('insert', SampleInsertPlugin);
     editor.register('edition', SampleEditionPlugin);
     editor.subscribe('input', function(field) {
-      console.log(field);
+      console.log('Current editing field:', field);
     });
   </script>
 </body>

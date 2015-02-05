@@ -267,11 +267,13 @@
         
         field.focus = true;
         field.element.classList.add('focus');
-        currentBlock = self.getCurrentBlock(self.getCurrentNode());
 
-        if (field.type == self.fieldTypes.RICH && field.currentBlock !== currentBlock) {
-          field.currentBlock = currentBlock;
-          self.setComponent('insert', field);
+        if (field.type == self.fieldTypes.RICH) {
+          currentBlock = self.getCurrentBlock(self.getCurrentNode());
+          if (field.currentBlock !== currentBlock) {
+            field.currentBlock = currentBlock;
+            self.setComponent('insert', field);
+          }
         }
         
         for (var _field in self.fields) (function (_field) {
