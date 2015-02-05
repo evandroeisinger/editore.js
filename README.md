@@ -1,6 +1,6 @@
 # editor.js [![Build Status](https://travis-ci.org/evandroeisinger/editor.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editor.js)
 
-> It's a magnific javascript editor! It's easy to create, valitade and get data from fields, even better is that you dont need to handle contenteditable :8ball: 
+> It's a magnific javascript editor! It's easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
 
 #### basic usage
 
@@ -8,7 +8,7 @@ It's easy to use! Load editor.js into your application, create the editor wrappe
 
 Let's load editor.js:
 ```html
-<script type="text/javascript" src="editor.js"></script>
+<script src="editor.js"></script>
 ```
 
 Enable pseudo fields placeholder:
@@ -28,7 +28,7 @@ Create editor wrapper element and some fields:
 </form>
 ```
 
-Instantiate a new editor passing it's wrapper element:
+Instantiate a new editor passing its wrapper element:
 ```javascript
 var editor = new Editor(document.getElementById('editor'));
 ```
@@ -40,17 +40,17 @@ editor.subscribe('input', function(field) {
 });
 ```
 
-Register a action plugin:
+To register insert plugin into its components collection:
 ```javascript
-editor.register('action', SampleActionPlugin);
+editor.register('insert', SampleActionPlugin);
 ```
 
-Register a edition plugin:
+To tegister edition plugin into its components collection:
 ```javascript
 editor.register('edition', SampleEditionPlugin);
 ```
 
-Destroy editor:
+If you need to remove editor elements and listeners:
 ```javascript
 editor.destroy();
 ```
@@ -66,10 +66,7 @@ editor.destroy();
 
 ---
 #### contribute
-Fork it
-Create your feature branch (git checkout -b my-new-feature)
-Test your changes to the best of your ability.
-Update the documentation to reflect your changes if they add or changes current functionality.
-Commit your changes (git commit -am 'Added some feature')
-Push to the branch (git push origin my-new-feature)
-Create new Pull Request
+Everyone can contribute! Finding bugs, creating issues, improving editor it self or creating components.
+Every contribution will be welcomed! :santa: 
+
+**Fork it** -> **Branch it** -> **Test it** -> **Push it** -> **Pull Request it** :gem:  
