@@ -7,9 +7,9 @@
 </head>
 <body>
   <form id="form">
-    <h1 class="field" data-field="title" data-require="true" data-type="simple" data-placeholder="Title" data-length="60">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>
-    <h3 class="field" data-field="description" data-type="simple" data-placeholder="Description" data-length="170">Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus</h3>
-    <article class="field" data-field="articleBody" data-type="rich" data-placeholder="Article Body">
+    <h1 class="field" data-field="title" data-placeholder="Title" data-required="true" data-length="60">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>
+    <h3 class="field" data-field="description" data-placeholder="Description" data-length="170">Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus</h3>
+    <article class="field" data-field="articleBody" data-placeholder="Article Body" data-required="true" data-type="rich">
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nec dapibus massa, id dapibus neque. Donec tellus diam, interdum ut felis vitae, iaculis commodo nunc. Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus. Nullam gravida, turpis ut consectetur pretium, massa neque hendrerit ante, non bibendum risus tellus ut lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin vel luctus diam, non ornare sem. Nam massa mauris, mattis vel rutrum eu, finibus eu elit. Donec id vestibulum nulla. Praesent ligula velit, sodales sed purus ut, varius rutrum magna. Cras vulputate vehicula nibh sit amet consectetur. Duis euismod massa aliquet, pulvinar urna ut, molestie ipsum. Aenean rutrum, arcu vel semper dapibus, lectus nisl sollicitudin nibh, nec fringilla nibh est quis erat. Vestibulum molestie sapien non arcu euismod, a malesuada dui pharetra. Fusce vestibulum iaculis libero, at vulputate elit.</p>
       <p>Donec suscipit varius ornare. Maecenas luctus sagittis nunc, sit amet facilisis justo lobortis quis. Pellentesque finibus imperdiet libero vel mollis. Quisque in augue mauris. Nunc nec faucibus urna. Fusce consequat, nibh eget condimentum ultricies, nisi urna fringilla sem, et porttitor urna massa in elit. Nunc mi ligula, feugiat sed metus eget, sagittis bibendum augue. Ut metus mauris, sagittis at venenatis vel, porta ac sem.</p>
       <p>Pellentesque lacinia dolor eu mi dapibus, sed fringilla orci dictum. Sed ultrices ullamcorper est semper varius. Duis tempor venenatis libero, aliquam volutpat tellus malesuada vel. In hac habitasse platea dictumst. Phasellus interdum varius magna consectetur fermentum. Cras ullamcorper ultrices tortor sed hendrerit. Aenean vestibulum ligula vitae bibendum convallis.</p>
@@ -19,13 +19,13 @@
   </form>
 
   <script type="text/javascript" src="../src/editor.js"></script>
-  <script type="text/javascript" src="../src/plugins/action-plugin-sample.js"></script>
-  <script type="text/javascript" src="../src/plugins/edition-plugin-sample.js"></script>
+  <script type="text/javascript" src="../src/plugins/sample-insert-plugin.js"></script>
+  <script type="text/javascript" src="../src/plugins/sample-edition-plugin.js"></script>
   <script type="text/javascript">
     var form   = document.getElementById('form'),
         editor = new Editor(form);
 
-    editor.register('action', SampleActionPlugin);
+    editor.register('insert', SampleInsertPlugin);
     editor.register('edition', SampleEditionPlugin);
     editor.subscribe('input', function(field) {
       console.log(field);
