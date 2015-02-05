@@ -19,8 +19,8 @@
     self.default.blockElement = 'p';
 
     // editor events
-    self.eventsTypes = {};
-    self.eventsTypes.INPUT = [];
+    self.eventTypes = {};
+    self.eventTypes.INPUT = [];
 
     // field types
     self.fieldTypes         = {};
@@ -61,7 +61,7 @@
           element     : field.element,
           maxLength   : field.maxLength,
           type        : field.type,
-          require     : field.required,
+          required     : field.required,
           placeholder : field.placeholder,
           plugins     : field.plugins,
         }
@@ -120,11 +120,9 @@
 
     // register callbacks to editor events
     function subscribe(type, callback) {
-      type = type.toUpperCase();
-      if (!self.fieldTypes[type])
+      if (!self.eventTypes[type.toUpperCase()])
         return new Error('cant subscribe to a invalid event!');
-
-      self.fieldTypes[type].push(callback);
+      self.eventTypes[type.toUpperCase()].push(callback);
     }
 
     // editor constructor
@@ -513,12 +511,11 @@
     emmit: function(event, data) {
       var self = this;
 
-      if (!self.events[event])
+      if (!self.eventTypes[event])
         return new Error('cant emmit a invalid event!');
-
-      for (var callback in self.events[event]) (function(callback) {
+      for (var callback in self.eventTypes[event]) (function(callback) {
         callback.call(self, data);
-      } (self.events[event][callback]));
+      } (self.eventTypes[event][callback]));
 
       return self;
     },
