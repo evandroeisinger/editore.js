@@ -28,7 +28,7 @@ Create editor wrapper element and some fields:
 </form>
 ```
 
-Instantiate a new editor passing it's wrapper element
+Instantiate a new editor passing it's wrapper element:
 ```javascript
 var editor = new Editor(document.getElementById('editor'));
 ```

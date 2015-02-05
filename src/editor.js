@@ -8,11 +8,11 @@
 }(window, function() {
   'use strict';
 
-  function Editor(form) {
+  function Editor(fieldsWrapper) {
     var self = this;
 
-    if (!form || !form.nodeName || !form.children.length)
-      return new Error('No form was passed!');
+    if (!fieldsWrapper || !fieldsWrapper.nodeName || !fieldsWrapper.children.length)
+      return new Error('No fields wrapper was passed!');
 
     // editor setup
     self.default = {};
@@ -61,9 +61,9 @@
     self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
 
-    // set editor form and fields
-    self.form             = form;
-    self.fields           = {};
+    // set editor wrapper and fields
+    self.fieldsWrapper = fieldsWrapper;
+    self.fields        = {};
 
     // return editor fields
     function fields() {
@@ -217,7 +217,7 @@
       self.fields[field].element.addEventListener('keypress', self.fields[field].events.keypress);
       self.fields[field].element.addEventListener('keyup', self.fields[field].events.keyup);
       self.fields[field].element.addEventListener('DOMNodeInserted', self.fields[field].events.DOMNodeInserted);
-    } (form.children[i]));
+    } (fieldsWrapper.children[i]));
 
     return {
       fields: fields,
