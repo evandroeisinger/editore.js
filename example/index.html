@@ -2,8 +2,8 @@
 <html>
 <head>
   <title>editor.js</title>
-  <link rel="stylesheet" type="text/css" href="../src/editor.css">
-  <link rel="stylesheet" type="text/css" href="../src/editor-theme.css">
+  <link rel="stylesheet" href="../src/editor.css">
+  <link rel="stylesheet" href="../src/editor-theme.css">
 </head>
 <body>
   <form id="form">
@@ -18,10 +18,10 @@
     </article>
   </form>
 
-  <script type="text/javascript" src="../src/editor.js"></script>
-  <script type="text/javascript" src="../src/plugins/sample-insert-plugin.js"></script>
-  <script type="text/javascript" src="../src/plugins/sample-edition-plugin.js"></script>
-  <script type="text/javascript">
+  <script src="../src/editor.js"></script>
+  <script src="../src/plugins/sample-insert-plugin.js"></script>
+  <script src="../src/plugins/sample-edition-plugin.js"></script>
+  <script>
     var form   = document.getElementById('form'),
         editor = new Editor(form);
 
