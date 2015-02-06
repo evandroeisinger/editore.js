@@ -141,7 +141,7 @@
     }
 
     // editor constructor
-    for (var i = form.children.length - 1; i >= 0; i--) (function(element) {
+    for (var i = fieldsWrapper.children.length - 1; i >= 0; i--) (function(element) {
       var field          = self.getDataAttribute('field', element, 'str', false),
           placeholder    = self.getDataAttribute('placeholder', element, 'str', false),
           pasteEvents    = [],
