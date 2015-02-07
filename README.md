@@ -55,7 +55,7 @@ If you need to remove editor elements and listeners:
 editor.destroy();
 ```
 ---
-#### api
+#### API
 ##### constructor
 ```javascript
 new Editor(element);
