@@ -61,7 +61,7 @@ editor.destroy();
 new Editor(element);
 ```
 ###### parameters
-- *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes.
+- *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes. *Child elements that don't have the required data-attributes will not be converted into editor fields.*
 
 ##### field
 ```html
