@@ -64,6 +64,9 @@ new Editor(element);
 - *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes.
 
 ##### field
+```html
+  <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
+```
 ###### data-attributes
 - *data-field*:
 - *data-placeholder*:
