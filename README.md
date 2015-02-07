@@ -56,8 +56,20 @@ editor.destroy();
 ```
 ---
 #### api
+##### constructor
+```javascript
+new Editor(element);
+```
+###### parameters
+- *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes.
 
-
+##### field
+###### data-attributes
+- *data-field*:
+- *data-placeholder*:
+- *data-required* (optional):
+- *data-type* (optional):
+- *data-length* (optional):
 
 ---
 #### support
