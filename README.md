@@ -76,7 +76,10 @@ new Editor(element);
 
 ---
 #### support
-
+- chrome:
+- firefox:
+- safari:
+- internet explore:
 
 
 ---
