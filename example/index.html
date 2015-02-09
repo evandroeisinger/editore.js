@@ -2,8 +2,8 @@
 <html>
 <head>
   <title>editor.js</title>
-  <link rel="stylesheet" href="../src/editor.css">
-  <link rel="stylesheet" href="../src/editor-theme.css">
+  <link rel="stylesheet" href="../src/editore.css">
+  <link rel="stylesheet" href="../src/editore-theme.css">
 </head>
 <body>
   <form id="form">
@@ -18,16 +18,16 @@
     </article>
   </form>
 
-  <script src="../src/editor.js"></script>
+  <script src="../src/editore.js"></script>
   <script src="../src/plugins/sample-insert-plugin.js"></script>
   <script src="../src/plugins/sample-edition-plugin.js"></script>
   <script>
     var form   = document.getElementById('form'),
-        editor = new Editor(form);
+        editore = new Editore(form);
 
-    editor.register('insert', SampleInsertPlugin);
-    editor.register('edition', SampleEditionPlugin);
-    editor.subscribe('input', function(field) {
+    editore.register('insert', SampleInsertPlugin);
+    editore.register('edition', SampleEditionPlugin);
+    editore.subscribe('input', function(field) {
       console.log('Current editing field:', field);
     });
   </script>
