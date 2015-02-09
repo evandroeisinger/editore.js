@@ -8,9 +8,9 @@
 }(window, function() {
   'use strict';
 
-  function SampleEditionPlugin(editor) {
+  function SampleEditionPlugin(component) {
     this.name = 'SampleEditionPlugin';
-    this.editor = editor;
+    this.component = component;
     this.button = document.createElement('button');
     this.button.innerText = 'edition-plugin';
   }

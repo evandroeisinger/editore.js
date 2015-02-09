@@ -8,9 +8,9 @@
 }(window, function() {
   'use strict';
 
-  function SampleInsertPlugin(editor) {
+  function SampleInsertPlugin(component) {
     this.name = 'SampleInsertPlugin';
-    this.editor = editor;
+    this.component = component;
     this.button = document.createElement('button');
     this.button.innerText = 'insert-plugin';
   }
@@ -18,7 +18,7 @@
   SampleInsertPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
-      console.log('insert',field);
+      console.log('insert',field, this.component);
     },
 
     beforeShow: function(component, field) {

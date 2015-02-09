@@ -29,6 +29,12 @@
       insert: {
         element: document.createElement('div'),
         plugins: [],
+        insertElement: function(element) {
+          if (!element || !(element instanceof HTMLElement))
+            return new Error('cant insert a invalid element');
+          // insert element before component
+          this.element.parentNode.insertBefore(element, this.element);
+        },
         status: false
       },
       edition: {
@@ -110,7 +116,7 @@
       if (!self.components[component] || !Plugin)
         return new Error('invalid component type or plugin');
 
-      var plugin = new Plugin(self);
+      var plugin = new Plugin(self.components[component]);
       self.components[component].plugins[plugin.name] = plugin;
       self.components[component].element.appendChild(plugin.button);
     }
