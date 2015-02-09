@@ -5,7 +5,7 @@ describe('editore.js', function() {
   beforeEach(function() {
     form = $j([
       '<form>',
-        '<h1 data-field="title" data-required="true" data-length="10" data-placeholder="Title"></h1>',
+        '<h1 data-field="title" data-placeholder="Title" data-required="true" data-length="10"></h1>',
         '<p data-field="description" data-placeholder="Description" data-type="rich">Description</p>',
         '<p data-field="withoutPlaceholder"></p>',
         '<p></p>',

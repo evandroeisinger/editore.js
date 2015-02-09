@@ -28,7 +28,7 @@
     beforeDestroy: function(component) {
       return;
     }
-  }
+  };
 
   return SampleEditionPlugin;
 }));

@@ -12,7 +12,7 @@
     this.name = 'SampleInsertPlugin';
     this.editor = editor;
     this.button = document.createElement('button');
-    this.button.innerText = 'edition-plugin';
+    this.button.innerText = 'insert-plugin';
   }
 
   SampleInsertPlugin.prototype = {
@@ -28,7 +28,7 @@
     beforeDestroy: function(component) {
       return;
     }
-  }
+  };
 
   return SampleInsertPlugin;
 }));
