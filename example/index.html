@@ -20,12 +20,14 @@
   <script src="../src/editore.js"></script>
   <script src="../src/plugins/sample-insert-plugin.js"></script>
   <script src="../src/plugins/bold-edition-plugin.js"></script>
+  <script src="../src/plugins/italic-edition-plugin.js"></script>
   <script>
     var form   = document.getElementById('form'),
         editore = new Editore(form);
         
     editore.register('insert', SampleInsertPlugin);
     editore.register('edition', BoldEditionPlugin);
+    editore.register('edition', ItalicEditionPlugin);
     editore.subscribe('input', function(field) {
       console.log('Current editing field:', field);
     });

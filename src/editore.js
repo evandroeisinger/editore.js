@@ -492,8 +492,6 @@
         else
           currentSelectionNode = range.startContainer;
 
-        console.log(currentSelectionNode.tagName.toLowerCase());
-
         if (currentSelectionNode.tagName.toLowerCase() == plugin.tag.toLowerCase())
           plugin.button.classList.add('active');
         else 
