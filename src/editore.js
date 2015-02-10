@@ -486,16 +486,22 @@
       for (plugin in edition.plugins) {
         plugin = edition.plugins[plugin];
         range = edition.selection.getRangeAt(0);
-        
+
         if (range.startContainer.nodeType === 3)
           currentSelectionNode = range.startContainer.parentNode;
         else
           currentSelectionNode = range.startContainer;
 
-        if (currentSelectionNode.tagName.toLowerCase() == plugin.tag.toLowerCase())
-          plugin.button.classList.add('active');
-        else 
-          plugin.button.classList.remove('active');
+        plugin.button.classList.remove('active');
+
+        while (currentSelectionNode.parentNode.tagName !== undefined) {
+          if (currentSelectionNode.tagName.toLowerCase() == plugin.tag.toLowerCase()) {
+            plugin.button.classList.add('active');
+            break;
+          }
+          // keep find
+          currentSelectionNode = currentSelectionNode.parentNode;
+        }
       }
 
       return self;
