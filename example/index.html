@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>editore.js</title>
-  <link rel="stylesheet" href="../src/editore.css">
   <link rel="stylesheet" href="../src/editore-theme.css">
 </head>
 <body>
@@ -20,13 +19,13 @@
 
   <script src="../src/editore.js"></script>
   <script src="../src/plugins/sample-insert-plugin.js"></script>
-  <script src="../src/plugins/sample-edition-plugin.js"></script>
+  <script src="../src/plugins/bold-edition-plugin.js"></script>
   <script>
     var form   = document.getElementById('form'),
         editore = new Editore(form);
         
     editore.register('insert', SampleInsertPlugin);
-    editore.register('edition', SampleEditionPlugin);
+    editore.register('edition', BoldEditionPlugin);
     editore.subscribe('input', function(field) {
       console.log('Current editing field:', field);
     });

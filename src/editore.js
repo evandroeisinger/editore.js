@@ -40,10 +40,10 @@
 
     // set action element      
     self.components.insert.element.setAttribute('contenteditable', 'false');
-    self.components.insert.element.setAttribute('id', 'insertComponent');
+    self.components.insert.element.setAttribute('id', 'insert-component');
     // set edition element      
     self.components.edition.element.setAttribute('contenteditable', 'false');
-    self.components.edition.element.setAttribute('id', 'editionComponent');
+    self.components.edition.element.setAttribute('id', 'edition-component');
     self.components.edition.element.style.position = 'absolute';
     self.components.edition.element.style.zIndex = 9999;
     // field types
@@ -108,8 +108,9 @@
     function register(component, Plugin) {
       if (!self.components[component] || !Plugin)
         return new Error('invalid component type or plugin');
-
-      var plugin = new Plugin(self.components[component]);
+      Plugin.prototype.component = self.components[component];
+      // instance a new plugin
+      var plugin = new Plugin();
       self.components[component].plugins[plugin.name] = plugin;
       self.components[component].element.appendChild(plugin.button);
     }
@@ -136,7 +137,7 @@
         component = self.components[component];
         for (plugin in component.plugins) {
           plugin = component.plugins[plugin];
-          plugin.beforeDestroy(component);
+          plugin.beforeDestroy();
           // unset components listeners
           if (plugin._action)
             plugin.button.removeEventListener('click', plugin._action);
@@ -257,10 +258,13 @@
           position = range.getBoundingClientRect();
           top = position.top + window.pageYOffset - self.components.edition.element.offsetHeight;
           left = ((position.left + position.right) / 2) - (self.components.edition.element.offsetWidth / 2);
+          // set component position and props
           self.components.edition.element.style.top =  top + 'px';
           self.components.edition.element.style.left = left + 'px';
           self.components.edition.status = true;
           self.components.edition.selection = selection;
+          // set edition plugins state
+          self.setEditionComponentPluginsState();
           return;
         }
 
@@ -451,9 +455,8 @@
         if (plugin._action)
           plugin.button.removeEventListener('click', plugin._action);
         // set new action
-        plugin._action = self.setListener([plugin.action], field, plugin);
+        plugin._action = self.setListener([plugin.action, self.setEditionComponentPluginsState], field, plugin);
         plugin.button.addEventListener('click', plugin._action);
-        plugin.beforeShow(self.components[component], field);
       }
 
       switch(component) {
@@ -467,6 +470,34 @@
           document.body.appendChild(self.components.edition.element);
           self.components.edition.status = true;
           break;
+      }
+
+      return self;
+    },
+
+    setEditionComponentPluginsState: function() {
+      var self = this,
+          edition = self.component || self.components['edition'],
+          currentSelectionNode,
+          plugin,
+          range;
+
+      // set plugins state
+      for (plugin in edition.plugins) {
+        plugin = edition.plugins[plugin];
+        range = edition.selection.getRangeAt(0);
+        
+        if (range.startContainer.nodeType === 3)
+          currentSelectionNode = range.startContainer.parentNode;
+        else
+          currentSelectionNode = range.startContainer;
+
+        console.log(currentSelectionNode.tagName.toLowerCase());
+
+        if (currentSelectionNode.tagName.toLowerCase() == plugin.tag.toLowerCase())
+          plugin.button.classList.add('active');
+        else 
+          plugin.button.classList.remove('active');
       }
 
       return self;

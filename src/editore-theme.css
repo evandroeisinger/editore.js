@@ -32,11 +32,11 @@ h3 {
   line-height: 1.5em;
 }
 
-#insertComponent {
+#insert-component {
   margin: 0 0 1em 0;
 }
 
-#insertComponent button {
+#insert-component button {
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
@@ -46,7 +46,7 @@ h3 {
   cursor: pointer;
 }
 
-#editionComponent button {
+#edition-component button {
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
@@ -56,12 +56,16 @@ h3 {
   cursor: pointer;
 }
 
-#editionComponent button:hover, #insertComponent button:hover {
+#edition-component button:hover, #insert-component button:hover {
   background: black;
   color: white;
 }
 
-#editionComponent:after {
+#edition-component button.active {
+  font-weight: bold;
+}
+
+#edition-component:after {
   content: '';
   position: absolute;
   border-color: black transparent transparent transparent;
