@@ -25,8 +25,5 @@
     "editor",
     "contenteditable"
   ],
-  "main": "src/editore.js",
-  "files": [
-    "src/editore.js"
-  ]
+  "main": "src/editore.js"
 }
