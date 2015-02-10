@@ -21,11 +21,11 @@
       console.log('edition', field);
     },
 
-    beforeShow: function(component, field) {
+    beforeShow: function(field) {
       return;
     },
 
-    beforeDestroy: function(component) {
+    beforeDestroy: function() {
       return;
     }
   };
