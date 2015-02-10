@@ -18,7 +18,7 @@
   SampleInsertPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
-      console.log('insert',field, this.component);
+      console.log('insert', field);
     },
 
     beforeShow: function(component, field) {

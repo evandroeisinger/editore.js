@@ -18,7 +18,7 @@
   SampleEditionPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
-      console.log('edition',field);
+      console.log('edition', field);
     },
 
     beforeShow: function(component, field) {

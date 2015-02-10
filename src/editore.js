@@ -29,12 +29,6 @@
       insert: {
         element: document.createElement('div'),
         plugins: [],
-        insertElement: function(element) {
-          if (!element || !(element instanceof HTMLElement))
-            return new Error('cant insert a invalid element');
-          // insert element before component
-          this.element.parentNode.insertBefore(element, this.element);
-        },
         status: false
       },
       edition: {
@@ -52,15 +46,14 @@
     self.components.edition.element.setAttribute('id', 'editionComponent');
     self.components.edition.element.style.position = 'absolute';
     self.components.edition.element.style.zIndex = 9999;
-
     // field types
     self.fieldTypes         = {};
     self.fieldTypes.RICH    = 'rich';
     self.fieldTypes.SIMPLE  = 'simple';
-
     // regex patterns
     self.regex              = {};
     self.regex.markup       = /(<\/*[\w\s01-9='":;,\-]*\/*>)+/g;
+    self.regex.markupSpaces = /(\s+)?(<\/*[\w\s01-9='":;,\-]*\/*>)+?(\s+)?/g;
     self.regex.enbsp        = /&nbsp;*/g;
     self.regex.space        = /\s/g;
     self.regex.spaces       = /\s+/g;
@@ -193,18 +186,17 @@
           case self.fieldTypes.SIMPLE:
             pasteEvents.push(self.binds.paste, self.binds.input);
             clickEvents.push(self.binds.focus);
-            keydownEvents.push(self.unsetPlaceholder);
+            keydownEvents.push(self.binds.removePlaceholder);
             keypressEvents.push(self.binds.disableBlocks);
-            keyupEvents.push(self.setLength, self.setPlaceholder, self.binds.focus, self.binds.input);
+            keyupEvents.push(self.binds.length, self.binds.placeholder, self.binds.focus, self.binds.input);
             break;
           case self.fieldTypes.RICH:
             pasteEvents.push(self.binds.paste, self.binds.input);
             clickEvents.push(self.binds.blocksCreation, self.binds.focus);
             mouseUpEvents.push(self.binds.selection);
-            keydownEvents.push(self.unsetPlaceholder);
-            keypressEvents.push();
-            keyupEvents.push(self.setLength, self.binds.blocksCreation, self.binds.focus, self.setPlaceholder, self.binds.input);
-            DOMNodeInsertedEvents.push(self.unsetSpan);
+            keydownEvents.push(self.binds.removePlaceholder);
+            keyupEvents.push(self.binds.length, self.binds.blocksCreation, self.binds.focus, self.binds.placeholder, self.binds.input);
+            DOMNodeInsertedEvents.push(self.binds.removeSpan);
             break;
         }
         // set optional listeners
@@ -218,8 +210,6 @@
         self.fields[field].element.style.minHeight = '1em'; //fix empty contenteditable input
         self.fields[field].element.setAttribute('contenteditable', true);
         self.fields[field].element.setAttribute('tabindex', (i - length) + 1);
-        self.setLength(self.fields[field]);
-        self.setPlaceholder(self.fields[field]);
         // create event handlers    
         self.fields[field].events.paste = self.setListener(pasteEvents, self.fields[field], self);
         self.fields[field].events.click = self.setListener(clickEvents, self.fields[field], self);
@@ -236,6 +226,9 @@
         self.fields[field].element.addEventListener('keypress', self.fields[field].events.keypress);
         self.fields[field].element.addEventListener('keyup', self.fields[field].events.keyup);
         self.fields[field].element.addEventListener('DOMNodeInserted', self.fields[field].events.DOMNodeInserted);
+        // apply length and placeholder
+        self.binds.length.call(self, self.fields[field]);
+        self.binds.placeholder.call(self, self.fields[field]);
       }
     }
 
@@ -296,12 +289,15 @@
         
         for (_field in self.fields) {
           _field = self.fields[_field];
-          _field.focus = false;
-          _field.element.classList.remove('focus');
+          
+          if (_field == field) {
+            _field.focus = true;
+            _field.element.classList.add('focus');
+          } else {
+            _field.focus = false;
+            _field.element.classList.remove('focus');
+          }
         }
-
-        field.focus = true;
-        field.element.classList.add('focus');
       },
 
       paste: function (field, e) {
@@ -353,6 +349,39 @@
         if ((node && node.children.length === 0 && e.which !== 8) || (!field.length && e.which === 1))
           document.execCommand('formatBlock', false, self.default.blockElement);
       },
+
+      placeholder: function(field) {
+        if (!field.length) {
+          field.element.innerHTML = "";
+          field.element.classList.add('placeholder');
+        }
+      },
+
+      length: function(field) {
+        var self = this;
+
+        field.length = field.element.innerHTML
+          .replace(self.regex.markup, '')
+          .replace(self.regex.spaceAndEnbsp, '_')
+          .length;
+      },
+
+      removePlaceholder: function(field, e) {
+        var self = this;
+        
+        if (e.keyCode !== 9)
+          field.element.classList.remove('placeholder');
+      },
+
+      removeSpan: function(field, e) {
+        var span = e.target;
+
+        if (span.nodeType == 3 || span.tagName.toLowerCase() !== "span" ) 
+          return;
+        // https://code.google.com/p/chromium/issues/detail?id=226941
+        span.parentNode.insertBefore(document.createTextNode(span.innerText), span);
+        span.parentNode.removeChild(span);
+      },
     },
 
     getCurrentNode: function() {
@@ -378,10 +407,14 @@
       var self = this;
 
       if (field.type == self.fieldTypes.SIMPLE)
-        return field.element.innerText.replace(self.regex.lineBreaks, ' ').replace(self.regex.trim, '');
-      if (field.type == self.fieldTypes.RICH)
-        return field.element.innerHTML;
-      return '';
+        return field.element.innerText
+          .replace(self.regex.lineBreaks, ' ')
+          .replace(self.regex.trim, '');
+      // return all inner content
+      return field.element.innerHTML
+        .replace(self.regex.lineBreaks, '')
+        .replace(self.regex.trim, '')
+        .replace(self.regex.markupSpaces, '$2');
     },
 
     getDataAttribute: function(name, element, type, defaultValue) {
@@ -406,16 +439,6 @@
       }
       
       return value;
-    },
-
-    setLength: function(field) {
-      var self = this;
-
-      field.length = field.element.innerHTML
-        .replace(self.regex.markup, '')
-        .replace(self.regex.spaceAndEnbsp, '_')
-        .length;
-      return self;
     },
 
     setComponent: function(component, field) {
@@ -449,15 +472,6 @@
       return self;
     },
 
-    setPlaceholder: function(field) {
-      var self = this;
-      if (!field.length) {
-        field.element.innerHTML = "";
-        field.element.classList.add('placeholder');
-      }
-      return self;
-    },
-
     setListener: function(methods, data, context) {
       var method;
 
@@ -467,26 +481,6 @@
           method.call(context, data, e);
         }
       };
-    },
-
-    // https://code.google.com/p/chromium/issues/detail?id=226941
-    unsetSpan: function(field, event) {
-      var self = this,
-          span = event.target;
-
-      if (span.nodeType == 3 || span.tagName.toLowerCase() !== "span" ) 
-        return;
-
-      span.parentNode.insertBefore(document.createTextNode(span.innerText), span);
-      span.parentNode.removeChild(span);
-      return self;
-    },
-
-    unsetPlaceholder: function(field, event) {
-      var self = this;
-      
-      if (event.keyCode !== 9)
-        field.element.classList.remove('placeholder');
     },
 
     validate: function(field) {
@@ -523,20 +517,20 @@
       return false;
     },
 
-    emmitEvent: function(event, data) {
+    emmitEvent: function(type, data) {
       var self = this,
           callback;
 
-      if (!self.eventTypes[event])
+      if (!self.eventTypes[type])
         return new Error('cant emmit a invalid event!');
       
-      for (callback in self.eventTypes[event]) {
-        callback = self.eventTypes[event][callback];
+      for (callback in self.eventTypes[type]) {
+        callback = self.eventTypes[type][callback];
         callback.call(self, data);
       }
 
       return self;
-    },
+    }
   };
 
   return Editore;
