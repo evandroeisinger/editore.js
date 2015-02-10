@@ -47,6 +47,7 @@ h3 {
 }
 
 #edition-component button {
+  outline: none;
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
