@@ -477,7 +477,7 @@
 
     setEditionComponentPluginsState: function() {
       var self = this,
-          edition = self.component || self.components['edition'],
+          edition = self.component || self.components.edition,
           currentSelectionNode,
           plugin,
           range;
