@@ -1,5 +1,0 @@
-.placeholder::after { 
-  content: attr(data-placeholder);
-  position: absolute;
-  top: 0;
-}

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "hint": "./node_modules/jshint/bin/jshint src/editore.js src/plugins/*.js",
-    "test": "./node_modules/karma/bin/karma start test/config.js"
+    "test": "npm run hint; ./node_modules/karma/bin/karma start test/config.js"
   },
   "license": "MIT",
   "devDependencies": {
@@ -27,7 +27,6 @@
   ],
   "main": "src/editore.js",
   "files": [
-    "src/editore.js",
-    "src/editore.css"
+    "src/editore.js"
   ]
 }

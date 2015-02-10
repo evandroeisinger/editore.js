@@ -1,3 +1,10 @@
+/* enable fields placeholder */
+.placeholder::after { 
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0;
+}
+
 form {
   width: 65%;
   margin: 0 auto;
