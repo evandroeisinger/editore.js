@@ -2,6 +2,7 @@
   "name": "editore",
   "version": "1.0.0",
   "author": "Evandro Eisinger <evandroeisinger@gmail.com>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/evandroeisinger/editore.js"
@@ -20,5 +21,13 @@
     "karma-jasmine-jquery": "^0.1.1",
     "uglify-js": "^2.4.16"
   },
-  "dependencies": {}
+  "keywords": [
+    "editor",
+    "contenteditable"
+  ],
+  "main": "src/editore.js",
+  "files": [
+    "src/editore.js",
+    "src/editore.css"
+  ]
 }
