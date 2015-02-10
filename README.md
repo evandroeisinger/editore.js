@@ -1,4 +1,4 @@
-# editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js)
+# editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm](https://img.shields.io/badge/npm-v1.0.0-blue.svg)](https://www.npmjs.com/package/editore)
 
 > It's a magnific javascript editor! It's easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
 
