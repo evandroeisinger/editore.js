@@ -472,7 +472,7 @@
           break;
         case 'edition':
           self.components.edition.element.innerHTML = "";
-          for (var plugin in self.components.edition.plugins) {
+          for (plugin in self.components.edition.plugins) {
             plugin = self.components.edition.plugins[plugin];
             self.components.edition.element.appendChild(plugin.button);
           }

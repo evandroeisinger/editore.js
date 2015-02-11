@@ -9,78 +9,80 @@
   'use strict';
 
   function LinkEditionPlugin() {
-    // set handlers
-    this.createHandler = createLink.bind(this);
-    this.removeHandler = removeLink.bind(this);
-
-    // create link form
-    this.removeButton = document.createElement('button');
-    this.removeButton.innerText = "Remove";
-    this.input = document.createElement('input');
-
-    // set listeners
-    this.removeButton.addEventListener('click', this.removeHandler);
-    this.input.addEventListener('keyup', this.createHandler);
-
+    var self = this;
     // set plugin elements/props
-    this.button = document.createElement('button');
-    this.button.innerText = 'Link';
-    this.name = 'LinkEditionPlugin';
-    this.tag = 'a';
+    self.button = document.createElement('button');
+    self.button.innerText = 'Link';
+    self.name = 'LinkEditionPlugin';
+    self.tag = 'a';
 
-    function createLink(e) {
+    // set handlers
+    self.createHandler = function(e) {
       e.preventDefault();
-      var url = this.input.value,
+      var url = self.input.value,
           isValid = /^https?:\/\/(\.?\w\/?)+(\/(.(?!\s))+\/?)*$/g.test(url);        
 
       if (isValid) {
-        this.input.classList.remove('invalid');
+        self.input.classList.remove('invalid');
 
         if (e.which === 13) {
-          this.restoreSelection();
+          self.restoreSelection();
           document.execCommand('createLink', false, url);
-          this.hideElements();
+          self.hideElements();
         }
       } else {
-        this.input.classList.add('invalid');
+        self.input.classList.add('invalid');
       }
-    }
+    };
 
-    function removeLink(e) {
+    self.removeHandler = function(e) {
       e.preventDefault();
-      this.restoreSelection();
+      self.restoreSelection();
       // apply link
       document.execCommand('unLink', false, null);
-      this.hideElements();
-    }
+      self.hideElements();
+    };
+
+    // create link form
+    self.removeButton = document.createElement('button');
+    self.removeButton.innerText = "Remove";
+    self.input = document.createElement('input');
+
+    // set listeners
+    self.removeButton.addEventListener('click', self.removeHandler);
+    self.input.addEventListener('keyup', self.createHandler);
   }
 
   LinkEditionPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
+      var self = this;
       // save selection
-      this.selection = this.component.selection.getRangeAt(0);
+      self.selection = self.component.selection.getRangeAt(0);
       // get url if its a link
-      this.showElements(this.getUrl());
+      self.showElements(self.getUrl());
     },
 
     restoreSelection: function() {
-      var _selection = window.getSelection();
+      var self = this,
+          _selection = window.getSelection();
+      // set new selection
       _selection.removeAllRanges();
-      _selection.addRange(this.selection);
+      _selection.addRange(self.selection);
     },
 
     getUrl: function() {
-      var url = false,
+      var self = this,
+          url = false,
           link;
 
-      if (this.selection.startContainer.nodeType === 3)
-        link = this.selection.startContainer.parentNode;
+      if (self.selection.startContainer.nodeType === 3)
+        link = self.selection.startContainer.parentNode;
       else
-        link = this.selection.startContainer;
+        link = self.selection.startContainer;
 
       while (link.parentNode.tagName !== undefined) {
-        if (link.tagName.toLowerCase() == this.tag.toLowerCase()) {
+        if (link.tagName.toLowerCase() == self.tag.toLowerCase()) {
           url = link.getAttribute('href');
           break;
         }
@@ -91,38 +93,42 @@
     },
 
     showElements: function(url) {
+      var self = this;
       // hide plugins
-      for (var plugin in this.component.plugins) {
-        this.component.element.removeChild(this.component.plugins[plugin].button);
+      for (var plugin in self.component.plugins) {
+        self.component.element.removeChild(self.component.plugins[plugin].button);
       }
       // show form
-      this.component.element.appendChild(this.input);
-      this.component.element.appendChild(this.removeButton);
-      this.input.focus();
-      this.input.classList.remove('invalid');
-      this.input.value = "";
+      self.component.element.appendChild(self.input);
+      self.component.element.appendChild(self.removeButton);
+      self.input.focus();
+      self.input.classList.remove('invalid');
+      self.input.value = "";
       // if already a link set its url
       if (url)
-        this.input.value = url;
+        self.input.value = url;
     },
 
     hideElements: function() {
+      var self = this;
       // restore plugins
-      this.component.element.removeChild(this.input);
-      this.component.element.removeChild(this.removeButton);
+      self.component.element.removeChild(self.input);
+      self.component.element.removeChild(self.removeButton);
       // show plugins
-      for (var plugin in this.component.plugins) {
-        this.component.element.appendChild(this.component.plugins[plugin].button);
+      for (var plugin in self.component.plugins) {
+        self.component.element.appendChild(self.component.plugins[plugin].button);
       }
       // check plugins state
-      this.component.checkPluginsState();
+      self.component.checkPluginsState();
     },
 
     destroy: function() {
-      this.removeButton.removeEventListener('click', this.removeHandler);
-      this.input.removeEventListener('keyup', this.createHandler);
-      this.component.removeChild(this.input);
-      this.component.removeChild(this.removeButton);
+      var self = this;
+      // remove listeners
+      self.removeButton.removeEventListener('click', self.removeHandler);
+      self.input.removeEventListener('keyup', self.createHandler);
+      self.component.removeChild(self.input);
+      self.component.removeChild(self.removeButton);
     }
   };
 

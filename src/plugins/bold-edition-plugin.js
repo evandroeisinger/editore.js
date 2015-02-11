@@ -9,10 +9,12 @@
   'use strict';
 
   function BoldEditionPlugin() {
-    this.button = document.createElement('button');
-    this.button.innerText = 'bold';
-    this.name = 'BoldEditionPlugin';
-    this.tag = 'b';
+    var self = this;
+    // set plugin elements/props
+    self.button = document.createElement('button');
+    self.button.innerText = 'bold';
+    self.name = 'BoldEditionPlugin';
+    self.tag = 'b';
   }
 
   BoldEditionPlugin.prototype = {

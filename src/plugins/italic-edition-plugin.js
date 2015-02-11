@@ -9,10 +9,12 @@
   'use strict';
 
   function ItalicEditionPlugin() {
-    this.button = document.createElement('button');
-    this.button.innerText = 'italic';
-    this.name = 'ItalicEditionPlugin';
-    this.tag = 'i';
+    var self = this;
+    // set plugin elements/props
+    self.button = document.createElement('button');
+    self.button.innerText = 'italic';
+    self.name = 'ItalicEditionPlugin';
+    self.tag = 'i';
   }
 
   ItalicEditionPlugin.prototype = {
