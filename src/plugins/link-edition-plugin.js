@@ -127,8 +127,6 @@
       // remove listeners
       self.removeButton.removeEventListener('click', self.removeHandler);
       self.input.removeEventListener('keyup', self.createHandler);
-      self.component.removeChild(self.input);
-      self.component.removeChild(self.removeButton);
     }
   };
 
