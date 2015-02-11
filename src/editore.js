@@ -248,12 +248,17 @@
       selection: function(field, e) {
         var self = this,
             selection = window.getSelection(),
+            selectionSupport = ['p', 'b', 'a', 'i'],
+            selectionTag = e.target.tagName.toLowerCase(),
             range,
             position,
             top,
             left;
 
-        if (selection.type == 'Range' && !self.components.edition.status) {
+        if (selectionSupport.indexOf(selectionTag) < 0)
+          return; 
+
+        if (selection.type == 'Range') {
           self.setComponent('edition', field);
           range = selection.getRangeAt(0);
           position = range.getBoundingClientRect();
@@ -262,17 +267,15 @@
           // set component position and props
           self.components.edition.element.style.top =  top + 'px';
           self.components.edition.element.style.left = left + 'px';
-          self.components.edition.status = true;
           self.components.edition.selection = selection;
           // set edition plugins state
           self.setEditionComponentPluginsState();
           return;
         }
 
-        if(self.components.edition.status) {
+        if (self.components.edition.selection) {
           document.body.removeChild(self.components.edition.element);
-          self.components.edition.status = false;
-          self.components.edition.selection = false;
+          self.components.edition.selection = null;
         }
       },
 
