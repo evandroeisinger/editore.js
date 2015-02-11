@@ -34,7 +34,8 @@
       edition: {
         element: document.createElement('div'),
         plugins: [],
-        status: false
+        status: false,
+        checkPluginsState: self.setEditionComponentPluginsState.bind(self)
       }
     };
 
@@ -137,7 +138,7 @@
         component = self.components[component];
         for (plugin in component.plugins) {
           plugin = component.plugins[plugin];
-          plugin.beforeDestroy();
+          plugin.destroy();
           // unset components listeners
           if (plugin._action)
             plugin.button.removeEventListener('click', plugin._action);
@@ -455,7 +456,11 @@
         if (plugin._action)
           plugin.button.removeEventListener('click', plugin._action);
         // set new action
-        plugin._action = self.setListener([plugin.action, self.setEditionComponentPluginsState], field, plugin);
+        if (component == 'edition')
+          plugin._action = self.setListener([plugin.action, self.setEditionComponentPluginsState], field, plugin);
+        else
+          plugin._action = self.setListener([plugin.action], field, plugin);
+        // set action handler
         plugin.button.addEventListener('click', plugin._action);
       }
 
@@ -466,6 +471,11 @@
           self.components.insert.status = true;
           break;
         case 'edition':
+          self.components.edition.element.innerHTML = "";
+          for (var plugin in self.components.edition.plugins) {
+            plugin = self.components.edition.plugins[plugin];
+            self.components.edition.element.appendChild(plugin.button);
+          }
           // set edition component
           document.body.appendChild(self.components.edition.element);
           self.components.edition.status = true;
