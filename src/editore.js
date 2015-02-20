@@ -112,6 +112,9 @@
       Plugin.prototype.component = self.components[component];
       // instance a new plugin
       var plugin = new Plugin();
+      // set plugin name into button class
+      plugin.button.classList.add(plugin.name);
+      // add plugin into his component
       self.components[component].plugins[plugin.name] = plugin;
       self.components[component].element.appendChild(plugin.button);
     }
