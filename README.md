@@ -44,7 +44,6 @@ console.log(values);
 // }
 ```
 ---
-## API
 ### constructor
 ```javascript
 new Editor(element);
