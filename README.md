@@ -1,57 +1,46 @@
 # editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm version](https://badge.fury.io/js/editore.svg)](http://badge.fury.io/js/editore) [![Bower version](https://badge.fury.io/bo/editore.svg)](http://badge.fury.io/bo/editore)
 
-> It's a magnific javascript editor! It's easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
+> A magnific javascript editor! It's easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
+
+#### install
+Available on npm and bower:
+`npm install editore`, `bower install editore` or [directly download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js)
 
 #### basic usage
-It's easy to use! Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new editor to use it.
-
-Let's load editor.js:
-```html
-<script src="editor.js"></script>
-```
-
-Enable pseudo fields placeholder:
-```css
-.placeholder::after { 
-  content: attr(data-placeholder);
-  position: absolute;
-  top: 0;
-}
-```
+It's easy to use! Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore to use it.
 
 Create editor wrapper element and some fields:
 ```html
 <form id="editor">
-  <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
-  <article data-field="article" data-placeholder="Article" data-type="rich" data-require="true"></article>
+  <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">Example title</h1>
+  <article data-field="articleBody" data-placeholder="Write here..." data-type="rich" data-require="true">
+    <p>Article body example.</p>
+  </article>
 </form>
 ```
 
-Instantiate a new editor passing its wrapper element:
+Instantiate a new Editore passing its wrapper element:
 ```javascript
-var editor = new Editor(document.getElementById('editor'));
+var editore = new Editore(document.getElementById('editor'));
 ```
 
-Subscribe for editor input events:
+Get values!
 ```javascript
-editor.subscribe('input', function(field) {
-  console.log('Current editing field:', field);
-});
-```
-
-To register insert plugin into its components collection:
-```javascript
-editor.register('insert', SampleActionPlugin);
-```
-
-To tegister edition plugin into its components collection:
-```javascript
-editor.register('edition', SampleEditionPlugin);
-```
-
-If you need to remove editor elements and listeners:
-```javascript
-editor.destroy();
+var values = editore.values();
+// values = {
+//   title: {
+//     name: 'title',
+//     length: 13,
+//     value: 'Example title',
+//     valid: false
+//   },
+//   articleBody: {
+//     name: 'articleBody',
+//     length: 21,
+//     value: '<p>Article body example.</p>',
+//     valid: true
+//   }
+// }
 ```
 ---
 #### API
@@ -62,16 +51,53 @@ new Editor(element);
 ###### parameters
 - *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes. *Child elements that don't have the required data-attributes will not be converted into editor fields.*
 
-##### field
+##### field element
 ```html
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
 ```
-###### data-attributes
-- *data-field*:
-- *data-placeholder*:
-- *data-required* (optional):
-- *data-type* (optional):
-- *data-length* (optional):
+###### data attributes
+- **data-field**=*"String"*;
+- **data-placeholder**=*"String"*;
+- **data-required**=*"Boolean" (optional)*: toggle class: required; 
+- **data-length**=*"Number" (optional)*: toggle class: invalid;
+- **data-type**=*"simple || rich" (optional)*.
+
+###### field types
+- **simple** *(default)*: It's a single-line field, without any text manipulation;
+- **rich**: It's a multi-line field, with text manipulation support.
+
+##### methods
+- **editore.values()**: Return a object with all fields values
+```
+{
+  fieldName: {
+    name: String,
+    length: Number,
+    value: String,
+    valid: Boolean
+  }
+}
+```
+- **editore.fields()**: Return a object with all fields internal attributes;
+```
+{
+  fieldName: {
+    element: DOMElement,
+    maxLength: Number,
+    name: String,
+    placeholder: String,
+    required: Boolean,
+    type: String
+  }
+}
+```
+- **editore.destroy()**: Unset editable and remove all fields listeners;
+- **editore.subscribe(** *eventType, callback* **)**: Subscribe for any input changes on fields;
+  - *eventType: 'input'*;
+  - *callback(currentField)*.   
+- **editore.register(** *componentType, pluginConstructor* **)**: Register components plugins for rich type fields manipulation.
+  - *componentType: 'edition' || 'insert'*;
+  - *pluginConstructor()*.
 
 ---
 #### support
