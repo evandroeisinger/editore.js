@@ -9,8 +9,8 @@ Available on npm and bower:
 #### basic usage
 It's easy to use! Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore to use it.
 
-Create editor wrapper element and some fields:
 ```html
+<!-- Create editor wrapper element and some fields: -->
 <form id="editor">
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">Example title</h1>
   <article data-field="articleBody" data-placeholder="Write here..." data-type="rich" data-require="true">
@@ -19,15 +19,16 @@ Create editor wrapper element and some fields:
 </form>
 ```
 
-Instantiate a new Editore passing its wrapper element:
 ```javascript
+// Instantiate a new Editore passing its wrapper element:
 var editore = new Editore(document.getElementById('editor'));
-```
 
-Get values!
-```javascript
+//Get values from fields:
 var values = editore.values();
-// values = {
+
+// show values
+console.log(values);
+// {
 //   title: {
 //     name: 'title',
 //     length: 13,
@@ -67,7 +68,8 @@ new Editor(element);
 - **rich**: It's a multi-line field, with text manipulation support.
 
 ##### methods
-- **editore.values()**: Return a object with all fields values
+###### editore.values()
+Return a object with all fields values.
 ```
 {
   fieldName: {
@@ -78,7 +80,9 @@ new Editor(element);
   }
 }
 ```
-- **editore.fields()**: Return a object with all fields internal attributes;
+
+###### editore.fields()
+Return a object with all fields internal attributes.
 ```
 {
   fieldName: {
@@ -91,13 +95,20 @@ new Editor(element);
   }
 }
 ```
-- **editore.destroy()**: Unset editable and remove all fields listeners;
-- **editore.subscribe(** *eventType, callback* **)**: Subscribe for any input changes on fields;
-  - *eventType: 'input'*;
-  - *callback(currentField)*.   
-- **editore.register(** *componentType, pluginConstructor* **)**: Register components plugins for rich type fields manipulation.
-  - *componentType: 'edition' || 'insert'*;
-  - *pluginConstructor()*.
+
+###### editore.destroy()
+Unset editable and remove all fields listeners.
+
+###### editore.subscribe( *eventType, callback* )
+Subscribe for any input changes on fields;
+  - *eventType (String)*: input
+  - *callback (Function)*:
+    - *arguments*: currentField   
+
+###### editore.register( *componentType, pluginConstructor* )
+Register components plugins for rich type fields manipulation.
+  - *componentType (String)*: edition || insert
+  - *pluginConstructor (Plugin Constructor)*
 
 ---
 #### support
@@ -105,7 +116,6 @@ new Editor(element);
 - firefox:
 - safari:
 - internet explore:
-
 
 ---
 #### contribute
