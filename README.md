@@ -44,30 +44,30 @@ console.log(values);
 // }
 ```
 ---
-#### API
-##### constructor
+## API
+### constructor
 ```javascript
 new Editor(element);
 ```
 ###### parameters
-- *element*: is the element from where the editor should get its child elements to transform in fields according with their data-attributes. *Child elements that don't have the required data-attributes will not be converted into editor fields.*
+  - **element**: is the element from where the editor should get its child elements to transform in fields according with their data-attributes. *Child elements that don't have the required data-attributes will not be converted into editor fields.*
 
-##### field element
+### field element
 ```html
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
 ```
 ###### data attributes
-- **data-field**=*"String"*
-- **data-placeholder**=*"String"*
-- **data-required**=*"Boolean" (optional)*: toggle class: required
-- **data-length**=*"Number" (optional)*: toggle class: invalid
-- **data-type**=*"String" (optional)*
-  - **simple** *(default)*: It's a single-line field, without any text manipulation
-  - **rich**: It's a multi-line field, with text manipulation support
+  - **data-field**=*"String"*
+  - **data-placeholder**=*"String"*
+  - **data-required**=*"Boolean" (optional)*: toggle class: required
+  - **data-length**=*"Number" (optional)*: toggle class: invalid
+  - **data-type**=*"String" (optional)*
+    - **simple** *(default)*: It's a single-line field, without any text manipulation
+    - **rich**: It's a multi-line field, with text manipulation support
 
-##### methods
+### methods
 ###### editore.values()
-- return a object with all fields values.
+  - return a object with all fields values.
 ```
 {
   fieldName: {
@@ -80,7 +80,7 @@ new Editor(element);
 ```
 
 ###### editore.fields()
-- return a object with all fields internal attributes.
+  - return a object with all fields internal attributes.
 ```
 {
   fieldName: {
@@ -95,29 +95,29 @@ new Editor(element);
 ```
 
 ###### editore.destroy()
-- unset editable and remove all fields listeners.
+  - unset editable and remove all fields listeners.
 
 ###### editore.subscribeInput( *eventType, callback* )
-- parameters
-  - **callback**=*"Function[currentField]"*
+  - parameters
+    - **callback**=*"Function[currentField]"*
 
 ###### editore.registerEditionComponent( *pluginConstructor* )
-- parameters  
-  - **pluginConstructor**=*"Plugin Constructor"*
+  - parameters  
+    - **pluginConstructor**=*"Plugin Constructor"*
 
 ###### editore.registerInsertComponent( *pluginConstructor* )
-- parameters  
-  - **pluginConstructor**=*"Plugin Constructor"*
+  - parameters  
+    - **pluginConstructor**=*"Plugin Constructor"*
 
 ---
-#### support
+## support
 - chrome:
 - firefox:
 - safari:
 - internet explore:
 
 ---
-#### contribute
+## contribute
 Everyone can contribute! Finding bugs, creating issues, improving editor it self or creating components.
 Every contribution will be welcomed! :santa: 
 
