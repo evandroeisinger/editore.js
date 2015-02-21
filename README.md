@@ -57,19 +57,17 @@ new Editor(element);
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
 ```
 ###### data attributes
-- **data-field**=*"String"*;
-- **data-placeholder**=*"String"*;
-- **data-required**=*"Boolean" (optional)*: toggle class: required; 
-- **data-length**=*"Number" (optional)*: toggle class: invalid;
-- **data-type**=*"simple || rich" (optional)*.
-
-###### field types
-- **simple** *(default)*: It's a single-line field, without any text manipulation;
-- **rich**: It's a multi-line field, with text manipulation support.
+- **data-field**=*"String"*
+- **data-placeholder**=*"String"*
+- **data-required**=*"Boolean" (optional)*: toggle class: required
+- **data-length**=*"Number" (optional)*: toggle class: invalid
+- **data-type**=*"String" (optional)*
+  - **simple** *(default)*: It's a single-line field, without any text manipulation
+  - **rich**: It's a multi-line field, with text manipulation support
 
 ##### methods
 ###### editore.values()
-Return a object with all fields values.
+- return a object with all fields values.
 ```
 {
   fieldName: {
@@ -82,7 +80,7 @@ Return a object with all fields values.
 ```
 
 ###### editore.fields()
-Return a object with all fields internal attributes.
+- return a object with all fields internal attributes.
 ```
 {
   fieldName: {
@@ -97,18 +95,19 @@ Return a object with all fields internal attributes.
 ```
 
 ###### editore.destroy()
-Unset editable and remove all fields listeners.
+- unset editable and remove all fields listeners.
 
-###### editore.subscribe( *eventType, callback* )
-Subscribe for any input changes on fields;
-  - *eventType (String)*: input
-  - *callback (Function)*:
-    - *arguments*: currentField   
+###### editore.subscribeInput( *eventType, callback* )
+- parameters
+  - **callback**=*"Function[currentField]"*
 
-###### editore.register( *componentType, pluginConstructor* )
-Register components plugins for rich type fields manipulation.
-  - *componentType (String)*: edition || insert
-  - *pluginConstructor (Plugin Constructor)*
+###### editore.registerEditionComponent( *pluginConstructor* )
+- parameters  
+  - **pluginConstructor**=*"Plugin Constructor"*
+
+###### editore.registerInsertComponent( *pluginConstructor* )
+- parameters  
+  - **pluginConstructor**=*"Plugin Constructor"*
 
 ---
 #### support
