@@ -21,8 +21,9 @@
     self.default.blockElement = 'p';
 
     // editor events
-    self.eventTypes = {};
-    self.eventTypes.INPUT = [];
+    self.eventTypes = {
+      'INPUT': []
+    };
 
     // editor components
     self.components = {
@@ -105,18 +106,34 @@
       return data;
     }
 
-    // register plugins
-    function register(component, Plugin) {
-      if (!self.components[component] || !Plugin)
-        return new Error('invalid component type or plugin');
-      Plugin.prototype.component = self.components[component];
+    // register edition plugins
+    function registerEditionComponent(Plugin) {
+      if (!Plugin)
+        return new Error('invalid plugin');
+      
+      Plugin.prototype.component = self.components.edition;
       // instance a new plugin
       var plugin = new Plugin();
       // set plugin name into button class
       plugin.button.classList.add(plugin.name);
       // add plugin into his component
-      self.components[component].plugins[plugin.name] = plugin;
-      self.components[component].element.appendChild(plugin.button);
+      self.components.edition.plugins[plugin.name] = plugin;
+      self.components.edition.element.appendChild(plugin.button);
+    }
+
+    // register edition plugins
+    function registerInsertComponent(Plugin) {
+      if (!Plugin)
+        return new Error('invalid plugin');
+
+      Plugin.prototype.component = self.components.insert;
+      // instance a new plugin
+      var plugin = new Plugin();
+      // set plugin name into button class
+      plugin.button.classList.add(plugin.name);
+      // add plugin into his component
+      self.components.insert.plugins[plugin.name] = plugin;
+      self.components.insert.element.appendChild(plugin.button);
     }
 
     // destroy editor listeners
@@ -152,11 +169,9 @@
       }
     }
 
-    // register callbacks to editor events
-    function subscribe(type, callback) {
-      if (!self.eventTypes[type.toUpperCase()])
-        return new Error('cant subscribe to a invalid event!');
-      self.eventTypes[type.toUpperCase()].push(callback);
+    // register callbacks to editor input event
+    function subscribeInput(callback) {
+      self.eventTypes['INPUT'].push(callback);
     }
 
     // editor constructor
@@ -240,9 +255,10 @@
     return {
       fields: fields,
       values: values,
-      register: register,
       destroy: destroy,
-      subscribe: subscribe
+      subscribeInput: subscribeInput,
+      registerInsertComponent: registerInsertComponent,
+      registerEditionComponent: registerEditionComponent
     };
   }
 

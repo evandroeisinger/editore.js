@@ -23,8 +23,9 @@ describe('editore.js', function() {
     expect(editore.values().description).toBeDefined();
     expect(editore.values().withoutPlaceholder).toBeUndefined();
     expect(editore.destroy).toBeDefined();
-    expect(editore.register).toBeDefined();
-    expect(editore.subscribe).toBeDefined();
+    expect(editore.registerInsertComponent).toBeDefined();
+    expect(editore.registerEditionComponent).toBeDefined();
+    expect(editore.subscribeInput).toBeDefined();
   });
 
   it('return a Error when no form was passed', function() {

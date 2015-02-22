@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>editore.js</title>
-  <link rel="stylesheet" href="../src/editore-theme.css">
+  <link rel="stylesheet" href="editore-theme.css">
 </head>
 <body>
   <form id="form">
@@ -18,17 +18,17 @@
   </form>
 
   <script src="../src/editore.js"></script>
-  <script src="../src/plugins/bold-edition-plugin.js"></script>
-  <script src="../src/plugins/link-edition-plugin.js"></script>
-  <script src="../src/plugins/italic-edition-plugin.js"></script>
+  <script src="plugins/bold-edition-plugin.js"></script>
+  <script src="plugins/link-edition-plugin.js"></script>
+  <script src="plugins/italic-edition-plugin.js"></script>
   <script>
     var form   = document.getElementById('form'),
         editore = new Editore(form);
         
-    editore.register('edition', BoldEditionPlugin);
-    editore.register('edition', ItalicEditionPlugin);
-    editore.register('edition', LinkEditionPlugin);
-    editore.subscribe('input', function(field) {
+    editore.registerEditionComponent(BoldEditionPlugin);
+    editore.registerEditionComponent(ItalicEditionPlugin);
+    editore.registerEditionComponent(LinkEditionPlugin);
+    editore.subscribeInput(function(field) {
       console.log('Current editing field:', field);
     });
   </script>
