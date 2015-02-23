@@ -96,7 +96,7 @@ new Editor(element);
 ###### editore.destroy()
   - unset editable and remove all fields listeners.
 
-###### editore.subscribeInput( *eventType, callback* )
+###### editore.subscribeInput( *callback* )
   - parameters
     - **callback**=*"Function[currentField]"*
 
