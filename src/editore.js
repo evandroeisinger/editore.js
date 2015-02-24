@@ -436,10 +436,12 @@
       if (field.type == self.fieldTypes.SIMPLE)
         return field.element.innerText
           .replace(self.regex.lineBreaks, ' ')
+          .replace(self.regex.spaceAndEnbsp, ' ')
           .replace(self.regex.trim, '');
       // return all inner content
       return field.element.innerHTML
         .replace(self.regex.lineBreaks, '')
+        .replace(self.regex.spaceAndEnbsp, ' ')
         .replace(self.regex.trim, '')
         .replace(self.regex.markupSpaces, '$2');
     },
