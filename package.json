@@ -8,7 +8,7 @@
     "url": "https://github.com/evandroeisinger/editore.js"
   },
   "scripts": {
-    "hint": "./node_modules/jshint/bin/jshint src/editore.js src/plugins/*.js",
+    "hint": "./node_modules/jshint/bin/jshint src/editore.js",
     "test": "npm run hint; ./node_modules/karma/bin/karma start test/config.js"
   },
   "license": "MIT",

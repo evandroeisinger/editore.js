@@ -2,7 +2,7 @@ module.exports = function(karma) {
   var config = {
     basePath: '../',
     frameworks: ['jasmine-jquery', 'jasmine'],
-    files: ['src/editore.js', 'src/plugins/sample-insert-plugin.js', 'src/plugins/sample-edition-plugin.js', 'test/editore.js'],
+    files: ['src/editore.js', 'test/editore.js'],
     reporters: ['progress'],
     port: 9876,
     colors: true,
