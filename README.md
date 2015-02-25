@@ -67,7 +67,9 @@ new Editor(element);
 ### methods
 ###### editore.values()
   - return a object with all fields values.
-```
+```javascript
+editore.clearFields();
+/*
 {
   fieldName: {
     name: String,
@@ -76,12 +78,15 @@ new Editor(element);
     valid: Boolean
   }
 }
+*/
 ```
 
 ###### editore.fields()
   - return a object with all fields internal attributes.
-```
-{
+```javascript
+editore.clearFields();
+/*
+return {
   fieldName: {
     element: DOMElement,
     maxLength: Number,
@@ -91,17 +96,39 @@ new Editor(element);
     type: String
   }
 }
+*/
 ```
 
 ###### editore.clearFields()
   - clear all fields data.
+```javascript
+editore.clearFields();
+```
+
+###### editore.setFieldsValues( *fields* )
+  - parameters
+    - **fields**=*"Object"*
+```javascript
+editore.setFieldsValues({
+  fieldName: 'Value',
+  fieldName: 'Value'
+});
+```
 
 ###### editore.destroy()
   - unset editable and remove all fields listeners.
+```javascript
+editore.destroy();
+```
 
 ###### editore.subscribeInput( *callback* )
   - parameters
     - **callback**=*"Function[currentField]"*
+```javascript
+editore.subscribeInput(function(currentField) {
+  console.log('Current: ', currentField);
+});
+```
 
 ###### editore.registerEditionComponent( *pluginConstructor* )
   - parameters  
