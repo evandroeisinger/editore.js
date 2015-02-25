@@ -93,6 +93,9 @@ new Editor(element);
 }
 ```
 
+###### editore.clearFields()
+  - clear all fields data.
+
 ###### editore.destroy()
   - unset editable and remove all fields listeners.
 
