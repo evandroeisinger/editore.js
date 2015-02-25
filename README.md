@@ -26,22 +26,22 @@ var editore = new Editore(document.getElementById('editor'));
 //Get values from fields:
 var values = editore.values();
 
-// show values
-console.log(values);
-// {
-//   title: {
-//     name: 'title',
-//     length: 13,
-//     value: 'Example title',
-//     valid: false
-//   },
-//   articleBody: {
-//     name: 'articleBody',
-//     length: 21,
-//     value: '<p>Article body example.</p>',
-//     valid: true
-//   }
-// }
+/* 
+values = {
+  title: {
+    name: 'title',
+    length: 13,
+    value: 'Example title',
+    valid: false
+  },
+  articleBody: {
+    name: 'articleBody',
+    length: 21,
+    value: '<p>Article body example.</p>',
+    valid: true
+  }
+}
+*/
 ```
 ---
 ### constructor
@@ -56,11 +56,11 @@ new Editor(element);
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
 ```
 ###### data attributes
-  - **data-field**=*"String"*
-  - **data-placeholder**=*"String"*
-  - **data-required**=*"Boolean" (optional)*: toggle class: required
-  - **data-length**=*"Number" (optional)*: toggle class: invalid
-  - **data-type**=*"String" (optional)*
+  - **data-field**=*String*
+  - **data-placeholder**=*String*
+  - **data-required**=*Boolean (optional)*: toggle class: required
+  - **data-length**=*Number (optional)*: toggle class: invalid
+  - **data-type**=*String (optional)*
     - **simple** *(default)*: It's a single-line field, without any text manipulation
     - **rich**: It's a multi-line field, with text manipulation support
 
@@ -70,7 +70,7 @@ new Editor(element);
 ```javascript
 editore.clearFields();
 /*
-{
+return {
   fieldName: {
     name: String,
     length: Number,
@@ -107,7 +107,7 @@ editore.clearFields();
 
 ###### editore.setFieldsValues( *fields* )
   - parameters
-    - **fields**=*"Object"*
+    - **fields**=*Object*
 ```javascript
 editore.setFieldsValues({
   fieldName: 'Value',
@@ -123,7 +123,7 @@ editore.destroy();
 
 ###### editore.subscribeInput( *callback* )
   - parameters
-    - **callback**=*"Function[currentField]"*
+    - **callback**=*Function[currentField]*
 ```javascript
 editore.subscribeInput(function(currentField) {
   console.log('Current: ', currentField);
@@ -132,11 +132,11 @@ editore.subscribeInput(function(currentField) {
 
 ###### editore.registerEditionComponent( *pluginConstructor* )
   - parameters  
-    - **pluginConstructor**=*"Plugin Constructor"*
+    - **pluginConstructor**=*Plugin Constructor*
 
 ###### editore.registerInsertComponent( *pluginConstructor* )
   - parameters  
-    - **pluginConstructor**=*"Plugin Constructor"*
+    - **pluginConstructor**=*Plugin Constructor*
 
 ---
 ## support
