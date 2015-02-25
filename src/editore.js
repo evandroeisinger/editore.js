@@ -136,7 +136,21 @@
       self.components.insert.element.appendChild(plugin.button);
     }
 
-    // destroy editor listeners
+    // return editor fields
+    function clearFields() {
+      var data = {},
+          field;
+
+      for (field in self.fields) {
+        field = self.fields[field];
+        field.element.innerHTML = "";
+        field.length = 0;
+        // set placeholder
+        self.binds.placeholder.call(self, field);
+      }
+    }
+
+    // destroy editor
     function destroy() {
       var component,
           plugin,
@@ -171,7 +185,7 @@
 
     // register callbacks to editor input event
     function subscribeInput(callback) {
-      self.eventTypes['INPUT'].push(callback);
+      self.eventTypes.INPUT.push(callback);
     }
 
     // editor constructor
@@ -254,6 +268,7 @@
 
     return {
       fields: fields,
+      clearFields: clearFields,
       values: values,
       destroy: destroy,
       subscribeInput: subscribeInput,
