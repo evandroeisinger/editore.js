@@ -142,10 +142,10 @@ editore.subscribeInput(function(currentField) {
 
 ---
 ## support
-- chrome:
-- firefox:
-- safari:
-- internet explore:
+- chrome: ?
+- firefox: ?
+- safari: ?
+- internet explore: ?
 
 ---
 ## contribute
