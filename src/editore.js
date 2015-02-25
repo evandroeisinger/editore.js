@@ -136,10 +136,26 @@
       self.components.insert.element.appendChild(plugin.button);
     }
 
-    // return editor fields
+    // set fields values
+    function setFieldsValues(fields) {
+      var field,
+          value;
+
+      for (field in fields) {
+        if (!self.fields[field])
+          return;
+        value = fields[field];
+        field = self.fields[field];
+        field.element.innerHTML = value;
+        // reload field
+        self.binds.length.call(self, field);
+        self.binds.placeholder.call(self, field);
+      }
+    }
+
+    // clear editor fields values
     function clearFields() {
-      var data = {},
-          field;
+      var field;
 
       for (field in self.fields) {
         field = self.fields[field];
@@ -268,6 +284,7 @@
 
     return {
       fields: fields,
+      setFieldsValues: setFieldsValues,
       clearFields: clearFields,
       values: values,
       destroy: destroy,

@@ -27,6 +27,7 @@ describe('editore.js', function() {
     expect(editore.registerEditionComponent).toBeDefined();
     expect(editore.subscribeInput).toBeDefined();
     expect(editore.clearFields).toBeDefined();
+    expect(editore.setFieldsValues).toBeDefined();
   });
 
   it('return a Error when no form was passed', function() {
