@@ -144,12 +144,16 @@
       for (field in fields) {
         if (!self.fields[field])
           return;
+
         value = fields[field];
         field = self.fields[field];
         field.element.innerHTML = value;
-        // reload field
-        self.binds.length.call(self, field);
-        self.binds.placeholder.call(self, field);
+        field.length = value.length;
+
+        if (field.length)
+          field.element.classList.remove('placeholder');
+        else
+          field.element.classList.add('placeholder');
       }
     }
 
@@ -162,7 +166,7 @@
         field.element.innerHTML = "";
         field.length = 0;
         // set placeholder
-        self.binds.placeholder.call(self, field);
+        field.element.classList.add('placeholder');
       }
     }
 
@@ -426,8 +430,6 @@
       },
 
       removePlaceholder: function(field, e) {
-        var self = this;
-        
         if (e.keyCode !== 9)
           field.element.classList.remove('placeholder');
       },
