@@ -168,7 +168,7 @@ Pretty soon we'll have more :pray:
       - editore uses this name to register and manage the plugin, also uses to define the class of the plugin button
     - **this.button**: *DOMElement* **(required)**
       - Editore get this button and insert into selection component
-    - **this.tag**: *String* **(required on edition plugin)**
+    - **this.tag**: *String* **(required if is a edition plugin)**
       - Editore uses this tag to check if the edition plugin is active with current selection element
   - injected objects
     - **this.component**: *DOMElement* **(required)**
