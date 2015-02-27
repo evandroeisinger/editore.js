@@ -7,7 +7,7 @@ Available on npm and bower:
 `npm install editore`, `bower install editore` or [directly download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js)
 
 #### basic usage
-Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
+Load editore.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
 
 ```html
 <!-- Create editor wrapper element and some fields: -->
