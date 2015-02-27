@@ -1,26 +1,27 @@
 # editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm version](https://badge.fury.io/js/editore.svg)](http://badge.fury.io/js/editore) [![Bower version](https://badge.fury.io/bo/editore.svg)](http://badge.fury.io/bo/editore)
 
-> A magnific javascript editor! It's easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
+> A magnific javascript editor! Easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
 
 #### install
 Available on npm and bower:
 `npm install editore`, `bower install editore` or [directly download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js)
 
 #### basic usage
-It's easy to use! Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore to use it.
+Load editor.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
 
 ```html
 <!-- Create editor wrapper element and some fields: -->
-<form id="editor">
+<div id="editor">
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">Example title</h1>
+  <h3>Article</h3>
   <article data-field="articleBody" data-placeholder="Write here..." data-type="rich" data-require="true">
-    <p>Article body example.</p>
+    <p>Lorem lorem lorem!</p>
   </article>
-</form>
+</div>
 ```
 
 ```javascript
-// Instantiate a new Editore passing its wrapper element:
+// Instantiate a new Editore passing fields wrapper element:
 var editore = new Editore(document.getElementById('editor'));
 
 //Get values from fields:
@@ -36,8 +37,8 @@ values = {
   },
   articleBody: {
     name: 'articleBody',
-    length: 21,
-    value: '<p>Article body example.</p>',
+    length: 18,
+    value: '<p>Lorem lorem lorem!</p>',
     valid: true
   }
 }
@@ -53,16 +54,18 @@ new Editor(element);
 
 ### field element
 ```html
-  <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60"></h1>
+  <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">
+    Lorem title!
+  </h1>
 ```
 ###### data attributes
-  - **data-field**: *String*
-  - **data-placeholder**: *String*
-  - **data-required**: *Boolean (optional)*
+  - **data-field**: *String* **(required)**
+  - **data-placeholder**: *String* **(required)**
+  - **data-required**: *Boolean*
     - toggle class: required
-  - **data-length**: *Number (optional)*
+  - **data-length**: *Number*
     - toggle class: invalid
-  - **data-type**: *String (optional)*
+  - **data-type**: *String*
     - **simple** *(default)*: It's a single-line field, without any text manipulation
     - **rich**: It's a multi-line field, with text manipulation support
 
@@ -70,7 +73,7 @@ new Editor(element);
 ###### editore.values()
   - return a object with all fields values.
 ```javascript
-editore.clearFields();
+editore.values();
 /*
 return {
   fieldName: {
@@ -102,7 +105,7 @@ return {
 ```
 
 ###### editore.clearFields()
-  - clear all fields data.
+  - clear all fields values.
 ```javascript
 editore.clearFields();
 ```
@@ -113,7 +116,7 @@ editore.clearFields();
 ```javascript
 editore.setFieldsValues({
   fieldName: 'Value',
-  fieldName: 'Value'
+  richFieldName: '<p>Value</p>'
 });
 ```
 
@@ -125,20 +128,85 @@ editore.destroy();
 
 ###### editore.subscribeInput( *callback* )
   - parameters
-    - **callback**: *Function[currentField]*
+    - **callback**: *Function(currentField)*
 ```javascript
 editore.subscribeInput(function(currentField) {
   console.log('Current: ', currentField);
 });
 ```
 
-###### editore.registerEditionComponent( *pluginConstructor* )
+###### editore.registerEditionComponent( *Plugin* )
+  - register a new plugin on selection edition component.
   - parameters  
-    - **pluginConstructor**: *Plugin Constructor*
+    - **Plugin**: *Plugin Constructor*
+```javascript
+editore.registerEditionComponent(EditionPlugin);
+```
 
-###### editore.registerInsertComponent( *pluginConstructor* )
+###### editore.registerInsertionComponent( *Plugin* )
+  - register a new plugin on insertion component, which is located between the current block and the next block.
   - parameters  
-    - **pluginConstructor**: *Plugin Constructor*
+    - **Plugin**: *Plugin Constructor*
+```javascript
+editore.registerInsertionComponent(InsertionPlugin);
+```
+
+### Plugins avaliable
+Pretty soon we'll have more :pray:
+
+- [Bold Edition Plugin](https://github.com/evandroeisinger/editore-bold-plugin.js)
+- [Italic Edition Plugin](https://github.com/evandroeisinger/editore-italic-plugin.js)
+- [Link Edition Plugin](https://github.com/evandroeisinger/editore-link-plugin.js)
+
+### Plugin constructor
+  - insertion type: A component called on rich fields selection to edit the selection data.
+  - edition type: A component called on rich fields between the current edit block and the next block, in order to insert new content into the field.
+
+##### method
+  - context instance objects
+    - **this.name**: *String* **(required)**
+      - editore uses this name to register and manage the plugin, also uses to define the class of the plugin button
+    - **this.button**: *DOMElement* **(required)**
+      - Editore get this button and insert into selection component
+    - **this.tag**: *String* **(required on edition plugin)**
+      - Editore uses this tag to check if the edition plugin is active with current selection element
+  - injected objects
+    - **this.component**: *DOMElement* **(required)**
+      - Editore adds in the plugin instance context it's component object, enabling access to it's element, plugins and checkPluginsState method.
+        - element: *DOMElement*
+        - plugins: *Array*
+        - checkPluginsState: *Function*
+
+```javascript
+function EditionPlugin() {
+  this.name = 'editionPlugin';
+  this.button = document.createElement('button');
+  this.button.innerText = 'Edition';
+  // if is a edition component
+  this.tag = 'i'
+  // show component objects
+  console.log(this.component)
+}
+```
+
+##### prototype
+  - **action**: *Function(currentSelectionField, clickEvent)* **(required)**
+    - method called when plugin button is clicked
+  - **destroy**: *Function()* **(required)**
+    - method called before destroy Editore
+
+```javascript
+EditionPlugin.prototype = {
+  action: function(currentSelectionField, clickEvent) {
+    e.preventDefault();
+    // do what you have to do
+  },
+
+  destroy: function() {
+    // destroy the plugin
+  }
+};
+```
 
 ---
 ## support
@@ -149,7 +217,7 @@ editore.subscribeInput(function(currentField) {
 
 ---
 ## contribute
-Everyone can contribute! Finding bugs, creating issues, improving editor it self or creating components.
+Everyone can contribute! Finding bugs, creating issues, improving documentation, improving editor it self or creating components.
 Every contribution will be welcomed! :santa: 
 
 **Fork it** -> **Branch it** -> **Test it** -> **Push it** -> **Pull Request it** :gem:  
