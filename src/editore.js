@@ -107,7 +107,7 @@
     }
 
     // register edition plugins
-    function registerEditionComponent(Plugin) {
+    function registerEditionPlugin(Plugin) {
       if (!Plugin)
         return new Error('invalid plugin');
       
@@ -122,7 +122,7 @@
     }
 
     // register edition plugins
-    function registerInsertComponent(Plugin) {
+    function registerInsertionPlugin(Plugin) {
       if (!Plugin)
         return new Error('invalid plugin');
 
@@ -293,8 +293,8 @@
       values: values,
       destroy: destroy,
       subscribeInput: subscribeInput,
-      registerInsertComponent: registerInsertComponent,
-      registerEditionComponent: registerEditionComponent
+      registerInsertionPlugin: registerInsertionPlugin,
+      registerEditionPlugin: registerEditionPlugin
     };
   }
 

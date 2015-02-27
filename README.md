@@ -135,20 +135,20 @@ editore.subscribeInput(function(currentField) {
 });
 ```
 
-###### editore.registerEditionComponent( *Plugin* )
+###### editore.registerEditionPlugin( *Plugin* )
   - register a new plugin on selection edition component.
   - parameters  
     - **Plugin**: *Plugin Constructor*
 ```javascript
-editore.registerEditionComponent(EditionPlugin);
+editore.registerEditionPlugin(EditionPlugin);
 ```
 
-###### editore.registerInsertionComponent( *Plugin* )
+###### editore.registerInsertionPlugin( *Plugin* )
   - register a new plugin on insertion component, which is located between the current block and the next block.
   - parameters  
     - **Plugin**: *Plugin Constructor*
 ```javascript
-editore.registerInsertionComponent(InsertionPlugin);
+editore.registerInsertionPlugin(InsertionPlugin);
 ```
 
 ### Plugins avaliable

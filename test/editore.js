@@ -23,8 +23,8 @@ describe('editore.js', function() {
     expect(editore.values().description).toBeDefined();
     expect(editore.values().withoutPlaceholder).toBeUndefined();
     expect(editore.destroy).toBeDefined();
-    expect(editore.registerInsertComponent).toBeDefined();
-    expect(editore.registerEditionComponent).toBeDefined();
+    expect(editore.registerInsertionPlugin).toBeDefined();
+    expect(editore.registerEditionPlugin).toBeDefined();
     expect(editore.subscribeInput).toBeDefined();
     expect(editore.clearFields).toBeDefined();
     expect(editore.setFieldsValues).toBeDefined();
