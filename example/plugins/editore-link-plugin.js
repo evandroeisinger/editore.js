@@ -1,19 +1,21 @@
 (function(global, plugin) {
+  'use strict';
+
   if (typeof define === 'function' && define.amd)
-    define('link-edition-plugin', ['editor-js'], plugin);
+    define('editore-link-plugin', plugin);
   else if (typeof exports !== 'undefined')
-    exports.LinkEditionPlugin = plugin();
+    exports.EditoreLinkPlugin = plugin();
   else
-    global.LinkEditionPlugin = plugin();
+    global.EditoreLinkPlugin = plugin();
 }(window, function() {
   'use strict';
 
-  function LinkEditionPlugin() {
+  function EditoreLinkPlugin() {
     var self = this;
     // set plugin elements/props
     self.button = document.createElement('button');
     self.button.innerText = 'Link';
-    self.name = 'LinkEditionPlugin';
+    self.name = 'linkEditionPlugin';
     self.tag = 'a';
 
     // set handlers
@@ -44,16 +46,18 @@
     };
 
     // create link form
-    self.removeButton = document.createElement('button');
-    self.removeButton.innerText = "Remove";
     self.input = document.createElement('input');
+    self.removeButton = document.createElement('button');
+    self.removeButton.className = 'linkEditionPlugin__removeButton';
+    self.removeButton.innerText = 'Remove';
+    self.input.className = 'linkEditionPlugin__input';
 
     // set listeners
     self.removeButton.addEventListener('click', self.removeHandler);
     self.input.addEventListener('keyup', self.createHandler);
   }
 
-  LinkEditionPlugin.prototype = {
+  EditoreLinkPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
       var self = this;
@@ -130,6 +134,5 @@
     }
   };
 
-  return LinkEditionPlugin;
+  return EditoreLinkPlugin;
 }));
-    

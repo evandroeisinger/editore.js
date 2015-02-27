@@ -1,23 +1,25 @@
 (function(global, plugin) {
+  'use strict';
+
   if (typeof define === 'function' && define.amd)
-    define('bold-edition-plugin', ['editor-js'], plugin);
+    define('editore-bold-plugin', plugin);
   else if (typeof exports !== 'undefined')
-    exports.BoldEditionPlugin = plugin();
+    exports.EditoreBoldPlugin = plugin();
   else
-    global.BoldEditionPlugin = plugin();
+    global.EditoreBoldPlugin = plugin();
 }(window, function() {
   'use strict';
 
-  function BoldEditionPlugin() {
+  function EditoreBoldPlugin() {
     var self = this;
     // set plugin elements/props
     self.button = document.createElement('button');
     self.button.innerText = 'bold';
-    self.name = 'BoldEditionPlugin';
+    self.name = 'boldEditionPlugin';
     self.tag = 'b';
   }
 
-  BoldEditionPlugin.prototype = {
+  EditoreBoldPlugin.prototype = {
     action: function(field, e) {
       e.preventDefault();
       document.execCommand('bold', false, null);
@@ -26,6 +28,5 @@
     destroy: function() {}
   };
 
-  return BoldEditionPlugin;
+  return EditoreBoldPlugin;
 }));
-    
