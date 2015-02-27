@@ -221,3 +221,6 @@ Everyone can contribute! Finding bugs, creating issues, improving documentation,
 Every contribution will be welcomed! :santa: 
 
 **Fork it** -> **Branch it** -> **Test it** -> **Push it** -> **Pull Request it** :gem:  
+
+*Currently development is being maintained by [Núcleo Digital Grupo RBS](http://nucleodigital.gruporbs.com.br/).*
+
