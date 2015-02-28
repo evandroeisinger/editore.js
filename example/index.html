@@ -26,9 +26,9 @@
     var form   = document.getElementById('form'),
         editore = new Editore(form);
         
-    editore.registerEditionComponent(EditoreBoldPlugin);
-    editore.registerEditionComponent(EditoreItalicPlugin);
-    editore.registerEditionComponent(EditoreLinkPlugin);
+    editore.registerEditionPlugin(window.EditoreBoldPlugin);
+    editore.registerEditionPlugin(window.EditoreItalicPlugin);
+    editore.registerEditionPlugin(window.EditoreLinkPlugin);
     editore.subscribeInput(function(field) {
       console.log('Current editing field:', field);
     });
