@@ -1,6 +1,6 @@
 # editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm version](https://badge.fury.io/js/editore.svg)](http://badge.fury.io/js/editore) [![Bower version](https://badge.fury.io/bo/editore.svg)](http://badge.fury.io/bo/editore)
 
-> A magnific javascript editor! Easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
+A magnific javascript editor! Create, validate and get data from fields easily without ever have to handle contenteditable yourself. :8ball:
 
 #### install
 Available on npm and bower:
