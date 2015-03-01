@@ -14,11 +14,11 @@ npm install editore
 bower install editore
 ```
 
-#### basic usage
-Load editore.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
+## basic usage
+
+Load editore.js into your application, then create the editor wrapper element with some fields inside:
 
 ```html
-<!-- Create editor wrapper element and some fields: -->
 <div id="editor">
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">Example title</h1>
   <h3>Article</h3>
@@ -28,30 +28,33 @@ Load editore.js into your application, create the editor wrapper element, set so
 </div>
 ```
 
+Now set some fields and instantiate a new Editore:
+
 ```javascript
-// Instantiate a new Editore passing fields wrapper element:
 var editore = new Editore(document.getElementById('editor'));
 
-//Get values from fields:
 var values = editore.values();
 
 /* 
-values = {
-  title: {
-    name: 'title',
-    length: 13,
-    value: 'Example title',
-    valid: false
-  },
-  articleBody: {
-    name: 'articleBody',
-    length: 18,
-    value: '<p>Lorem lorem lorem!</p>',
-    valid: true
+  values will be something like this:
+
+  {
+   title: {
+     name: 'title',
+     length: 13,
+     value: 'Example title',
+     valid: false
+   },
+   articleBody: {
+     name: 'articleBody',
+     length: 18,
+     value: '<p>Lorem lorem lorem!</p>',
+     valid: true
+   }
   }
-}
-*/
+ */
 ```
+
 ---
 ### constructor
 ```javascript
