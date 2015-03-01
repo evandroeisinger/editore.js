@@ -2,9 +2,17 @@
 
 A magnific javascript editor! Create, validate and get data from fields easily without ever have to handle contenteditable yourself. :8ball:
 
-#### install
-Available on npm and bower:
-`npm install editore`, `bower install editore` or [directly download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js)
+## install
+
+Available on npm and bower, or through [direct download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js).
+
+```sh
+npm install editore
+```
+
+```sh
+bower install editore
+```
 
 #### basic usage
 Load editore.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
