@@ -70,6 +70,15 @@ new Editor(element);
     - **rich**: It's a multi-line field, with text manipulation support
 
 ### methods
+- [editore.values()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editorevalues)
+- [editore.fields()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editorefields)
+- [editore.clearFields()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreclearfields)
+- [editore.setFieldsValues( *fields* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresetfieldsvalues-fields-)
+- [editore.destroy()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoredestroy)
+- [editore.subscribeInput( *callback* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresubscribeinput-callback-)
+- [editore.registerEditionPlugin( *Plugin* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregistereditionplugin-plugin-)
+- [editore.registerInsertionPlugin( *Plugin* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregisterinsertionplugin-plugin-)
+
 ###### editore.values()
   - return a object with all fields values.
 ```javascript
@@ -171,8 +180,7 @@ Pretty soon we'll have more :pray:
     - **this.tag**: *String* **(required if is a edition plugin)**
       - Editore uses this tag to check if the edition plugin is active with current selection element
   - injected objects
-    - **this.component**: *DOMElement* **(required)**
-      - Editore adds in the plugin instance context it's component object, enabling access to it's element, plugins and checkPluginsState method.
+    - **this.component**: Editore adds in the plugin instance context it's component object, enabling access to it's element, plugins and checkPluginsState method.
         - element: *DOMElement*
         - plugins: *Array*
         - checkPluginsState: *Function*
