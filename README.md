@@ -28,7 +28,7 @@ Load editore.js into your application, then create the editor wrapper element wi
 </div>
 ```
 
-Now set some fields and instantiate a new Editore:
+Now instantiate a new Editore:
 
 ```javascript
 var editore = new Editore(document.getElementById('editor'));
