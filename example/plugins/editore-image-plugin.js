@@ -37,10 +37,11 @@
   }
 
   EditoreImagePlugin.prototype = {
-    uploadComplete: function(figure) {
-      // todo empty preview
+    uploadComplete: function(figure, autocomplete) {
       var image = figure.getElementsByTagName('img')[0];
-      
+      if (autocomplete)
+        return figure.classList.remove('preview');
+      // return complete method
       return function(url) {
         figure.classList.remove('preview');
         image.src = url;
@@ -94,7 +95,7 @@
       if (self.options.uploadService)
         self.options.uploadService(file, self.uploadComplete(figure));
       else
-        self.uploadComplete();
+        self.uploadComplete(figure, true);
     },
 
     action: function(field, e) {

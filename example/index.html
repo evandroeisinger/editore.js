@@ -30,13 +30,7 @@
     editore.registerEditionPlugin(window.EditoreBoldPlugin);
     editore.registerEditionPlugin(window.EditoreItalicPlugin);
     editore.registerEditionPlugin(window.EditoreLinkPlugin);
-    editore.registerInsertionPlugin(window.EditoreImagePlugin, {
-      uploadService: function(image, done) {
-        setTimeout(function() {
-          done('example.jpg');
-        }, 2500);
-      }
-    });
+    editore.registerInsertionPlugin(window.EditoreImagePlugin);
     editore.subscribeInput(function(field) {
       console.log('Current editing field:', field);
     });
