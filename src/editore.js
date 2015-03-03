@@ -107,11 +107,13 @@
     }
 
     // register edition plugins
-    function registerEditionPlugin(Plugin) {
+    function registerEditionPlugin(Plugin, options) {
       if (!Plugin)
         return new Error('invalid plugin');
       
       Plugin.prototype.component = self.components.edition;
+      Plugin.prototype.options = options || {};
+
       // instance a new plugin
       var plugin = new Plugin();
       // set plugin name into button class
@@ -122,11 +124,13 @@
     }
 
     // register edition plugins
-    function registerInsertionPlugin(Plugin) {
+    function registerInsertionPlugin(Plugin, options) {
       if (!Plugin)
         return new Error('invalid plugin');
 
       Plugin.prototype.component = self.components.insert;
+      Plugin.prototype.options = options || {};
+
       // instance a new plugin
       var plugin = new Plugin();
       // set plugin name into button class
