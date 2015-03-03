@@ -32,6 +32,21 @@ h3 {
   line-height: 1.5em;
 }
 
+.field figure {
+  display: block;
+  margin: 1em 0;
+  padding: 0;
+  line-height: 0;
+}
+
+.field figure img {
+  width: 100%;
+}
+
+.field figure.preview img {
+  opacity: 0.5;
+}
+
 #insert-component {
   margin: 0 0 1em 0;
 }
@@ -44,6 +59,7 @@ h3 {
   background: transparent;
   margin: 0 1em 0 0;
   cursor: pointer;
+  outline: none;
 }
 
 #edition-component button {
@@ -55,6 +71,7 @@ h3 {
   background: white;
   margin: 0;
   cursor: pointer;
+  outline: none;
 }
 
 #edition-component button:hover, #insert-component button:hover {

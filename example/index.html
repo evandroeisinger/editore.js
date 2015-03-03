@@ -7,9 +7,9 @@
 <body>
   <a href="https://github.com/evandroeisinger/editore.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
   <form id="form">
-    <h1 class="field" data-field="title" data-placeholder="Title" data-required="true" data-length="60">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>
-    <h3 class="field" data-field="description" data-placeholder="Description" data-length="170">Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus</h3>
-    <article class="field" data-field="articleBody" data-placeholder="Article Body" data-required="true" data-type="rich">
+    <h1 class="field" data-field="title" data-placeholder="Title" data-required="true" data-length="60" spellcheck="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>
+    <h3 class="field" data-field="description" data-placeholder="Description" data-length="170" spellcheck="false">Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus</h3>
+    <article class="field" data-field="articleBody" data-placeholder="Article Body" data-required="true" data-type="rich" spellcheck="false">
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nec dapibus massa, id dapibus neque. Donec tellus diam, interdum ut felis vitae, iaculis commodo nunc. Mauris tortor metus, mollis eget mollis nec, porttitor id enim. Mauris ultrices, libero a eleifend rhoncus, odio sem tincidunt lectus, id pulvinar ante tellus ac tellus. Nullam gravida, turpis ut consectetur pretium, massa neque hendrerit ante, non bibendum risus tellus ut lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin vel luctus diam, non ornare sem. Nam massa mauris, mattis vel rutrum eu, finibus eu elit. Donec id vestibulum nulla. Praesent ligula velit, sodales sed purus ut, varius rutrum magna. Cras vulputate vehicula nibh sit amet consectetur. Duis euismod massa aliquet, pulvinar urna ut, molestie ipsum. Aenean rutrum, arcu vel semper dapibus, lectus nisl sollicitudin nibh, nec fringilla nibh est quis erat. Vestibulum molestie sapien non arcu euismod, a malesuada dui pharetra. Fusce vestibulum iaculis libero, at vulputate elit.</p>
       <p>Donec suscipit varius ornare. Maecenas luctus sagittis nunc, sit amet facilisis justo lobortis quis. Pellentesque finibus imperdiet libero vel mollis. Quisque in augue mauris. Nunc nec faucibus urna. Fusce consequat, nibh eget condimentum ultricies, nisi urna fringilla sem, et porttitor urna massa in elit. Nunc mi ligula, feugiat sed metus eget, sagittis bibendum augue. Ut metus mauris, sagittis at venenatis vel, porta ac sem.</p>
       <p>Pellentesque lacinia dolor eu mi dapibus, sed fringilla orci dictum. Sed ultrices ullamcorper est semper varius. Duis tempor venenatis libero, aliquam volutpat tellus malesuada vel. In hac habitasse platea dictumst. Phasellus interdum varius magna consectetur fermentum. Cras ullamcorper ultrices tortor sed hendrerit. Aenean vestibulum ligula vitae bibendum convallis.</p>
@@ -22,6 +22,7 @@
   <script src="plugins/editore-bold-plugin.js"></script>
   <script src="plugins/editore-link-plugin.js"></script>
   <script src="plugins/editore-italic-plugin.js"></script>
+  <script src="plugins/editore-image-plugin.js"></script>
   <script>
     var form   = document.getElementById('form'),
         editore = new Editore(form);
@@ -29,6 +30,13 @@
     editore.registerEditionPlugin(window.EditoreBoldPlugin);
     editore.registerEditionPlugin(window.EditoreItalicPlugin);
     editore.registerEditionPlugin(window.EditoreLinkPlugin);
+    editore.registerInsertionPlugin(window.EditoreImagePlugin, {
+      uploadService: function(image, done) {
+        setTimeout(function() {
+          done('example.jpg');
+        }, 2500);
+      }
+    });
     editore.subscribeInput(function(field) {
       console.log('Current editing field:', field);
     });
