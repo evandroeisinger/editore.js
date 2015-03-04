@@ -15,7 +15,7 @@
     // set plugin elements/props
     self.button = document.createElement('button');
     self.button.innerText = 'Insert Image';
-    self.name = 'imageInsertPlugin';
+    self.name = 'imageInsertionPlugin';
 
     // create input element for files selection
     self.fileInput = document.createElement('input');
@@ -26,10 +26,10 @@
           validate = /.(jpg|jpeg|png|gif)/;
 
       // if no file was selected
-      if (!file || !validate.test(file.name))
+      if (!file || !validate.test(file.name.toLowerCase()))
         return new Error('invalid file');
 
-      self.getImagePreview(file, self.insertPreview);
+      self.createPreview(file, self.insertPreview);
     }
 
     // add to virtual file upload element a change listener
@@ -37,24 +37,39 @@
   }
 
   EditoreImagePlugin.prototype = {
-    uploadComplete: function(figure, autocomplete) {
-      var image = figure.getElementsByTagName('img')[0];
-      if (autocomplete)
-        return figure.classList.remove('preview');
-      // return complete method
+    done: function(image, figure) {
+      var self = this,
+          preload = new Image();
+      
       return function(url) {
-        figure.classList.remove('preview');
-        image.src = url;
+        if (!url)
+          return new Error('no upload image url was passed');
+        
+        // preload image
+        preload.src = url;
+        // when loaded swap
+        preload.onload = self.uploadComplete(image, figure, self.options.uploadComplete)(url);
       }
     },
 
-    createFigure: function(file) {
+    uploadComplete: function(image, figure, callback) {
+      return function(url) {
+        figure.classList.remove('preview');
+        
+        if (url)
+          image.src = url;
+        if (callback)
+          callback(image, figure);
+      }
+    },
+
+    createFigure: function(preview) {
       var figure = document.createElement('figure'), 
           image = new Image();
       
       image.setAttribute('contenteditable', false);
       image.draggable = false;
-      image.src = file;
+      image.src = preview;
       figure.setAttribute('contenteditable', false);
       figure.classList.add('preview');
       figure.appendChild(image);
@@ -69,20 +84,21 @@
       return block;
     },
 
-    getImagePreview: function(file, callback) {
+    createPreview: function(file, callback) {
       var self = this,
           reader = new FileReader();
 
       reader.onload = function() {
-        callback.call(self, reader.result);
+        callback.call(self, file, reader.result);
       }
 
       reader.readAsDataURL(file); 
     },
 
-    insertPreview: function(file) {
+    insertPreview: function(file, preview) {
       var self = this,
-          figure = self.createFigure(file);
+          figure = self.createFigure(preview),
+          image = figure.getElementsByTagName('img')[0];
 
       // insert figure after the component element
       self.component.element.parentElement.insertBefore(figure, self.component.element.nextSibling);
@@ -91,11 +107,11 @@
       if (!figure.nextSibling)
         self.component.element.parentElement.insertBefore(self.createEmptyBlock(), figure.nextSibling);
 
-      // if a upload service was passed
+      // upload if a service was passed
       if (self.options.uploadService)
-        self.options.uploadService(file, self.uploadComplete(figure));
-      else
-        self.uploadComplete(figure, true);
+        return self.options.uploadService(file, self.done(image, figure));
+
+      self.uploadComplete(image, figure)();
     },
 
     action: function(field, e) {
@@ -103,9 +119,7 @@
       e.preventDefault();
 
       this.fileInput.click();
-    },
-
-    destroy: function() {}
+    }
   };
 
   return EditoreImagePlugin;
