@@ -166,6 +166,7 @@ Pretty soon we'll have more :pray:
 - [Bold Edition Plugin](https://github.com/evandroeisinger/editore-bold-plugin.js)
 - [Italic Edition Plugin](https://github.com/evandroeisinger/editore-italic-plugin.js)
 - [Link Edition Plugin](https://github.com/evandroeisinger/editore-link-plugin.js)
+- [Image Insertion Plugin](https://github.com/evandroeisinger/editore-image-plugin.js)
 
 ### Plugin constructor
   - insertion type: A component called on rich fields selection to edit the selection data.
