@@ -196,7 +196,9 @@
         component = self.components[component];
         for (plugin in component.plugins) {
           plugin = component.plugins[plugin];
-          plugin.destroy();
+          // execute plugin destroy method if exists
+          if (plugin.destroy)
+            plugin.destroy();
           // unset components listeners
           if (plugin._action)
             plugin.button.removeEventListener('click', plugin._action);
