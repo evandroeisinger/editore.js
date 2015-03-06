@@ -1,6 +1,6 @@
 {
   "name": "editore",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "main": "src/editore.js",
   "ignore": [],
   "dependencies": {},
