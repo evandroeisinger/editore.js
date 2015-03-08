@@ -144,20 +144,22 @@ editore.subscribeInput(function(currentField) {
 });
 ```
 
-###### editore.registerEditionPlugin( *Plugin* )
+###### editore.registerEditionPlugin( *Plugin*, *pluginOptions* )
   - register a new plugin on selection edition component.
   - parameters  
     - **Plugin**: *Plugin Constructor*
+    - **pluginOptions**: *Object*
 ```javascript
 editore.registerEditionPlugin(EditionPlugin);
 ```
 
-###### editore.registerInsertionPlugin( *Plugin* )
+###### editore.registerInsertionPlugin( *Plugin*, *pluginOptions* )
   - register a new plugin on insertion component, which is located between the current block and the next block.
   - parameters  
     - **Plugin**: *Plugin Constructor*
+    - **pluginOptions**: *Object*
 ```javascript
-editore.registerInsertionPlugin(InsertionPlugin);
+editore.registerInsertionPlugin(InsertionPlugin, pluginOptions);
 ```
 
 ### Plugins avaliable
@@ -187,8 +189,8 @@ Pretty soon we'll have more :pray:
         - checkPluginsState: *Function*
 
 ```javascript
-function EditionPlugin() {
-  this.name = 'editionPlugin';
+function Plugin() {
+  this.name = 'PluginName';
   this.button = document.createElement('button');
   this.button.innerText = 'Edition';
   // if is a edition component
@@ -205,7 +207,7 @@ function EditionPlugin() {
     - method called before destroy Editore
 
 ```javascript
-EditionPlugin.prototype = {
+Plugin.prototype = {
   action: function(currentSelectionField, clickEvent) {
     e.preventDefault();
     // do what you have to do
