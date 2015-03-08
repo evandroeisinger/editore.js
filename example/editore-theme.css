@@ -47,11 +47,11 @@ h3 {
   opacity: 0.5;
 }
 
-#insert-component {
+#insertion-component {
   margin: 0 0 1em 0;
 }
 
-#insert-component button {
+#insertion-component button {
   line-height: 1em;
   padding: 1em;
   border: 1px solid black;
@@ -74,7 +74,7 @@ h3 {
   outline: none;
 }
 
-#edition-component button:hover, #insert-component button:hover {
+#edition-component button:hover, #insertion-component button:hover {
   background: black;
   color: white;
 }

@@ -42,7 +42,7 @@
 
     // set action element      
     self.components.insert.element.setAttribute('contenteditable', 'false');
-    self.components.insert.element.setAttribute('id', 'insert-component');
+    self.components.insert.element.setAttribute('id', 'insertion-component');
     // set edition element      
     self.components.edition.element.setAttribute('contenteditable', 'false');
     self.components.edition.element.setAttribute('id', 'edition-component');
@@ -63,6 +63,7 @@
     self.regex.lineBreak      = /[\r\n]/g; 
     self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
+    self.regex.insertionComponenet = /<div contenteditable="false" id="insertion-component">.*<\/div>/;
 
     // set editor wrapper and fields
     self.fieldsWrapper = fieldsWrapper;
@@ -471,7 +472,8 @@
     },
 
     getValue: function(field) {
-      var self = this;
+      var self = this,
+          _field;
 
       if (field.type == self.fieldTypes.SIMPLE)
         return field.element.innerText
@@ -480,6 +482,7 @@
           .replace(self.regex.trim, '');
       // return all inner content
       return field.element.innerHTML
+        .replace(self.regex.insertionComponenet, '')
         .replace(self.regex.lineBreaks, '')
         .replace(self.regex.spaceAndEnbsp, ' ')
         .replace(self.regex.trim, '')
