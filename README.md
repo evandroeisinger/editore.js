@@ -76,8 +76,8 @@ new Editor(element);
 - [editore.setFieldsValues( *fields* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresetfieldsvalues-fields-)
 - [editore.destroy()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoredestroy)
 - [editore.subscribeInput( *callback* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresubscribeinput-callback-)
-- [editore.registerEditionPlugin( *Plugin* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregistereditionplugin-plugin-)
-- [editore.registerInsertionPlugin( *Plugin* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregisterinsertionplugin-plugin-)
+- [editore.registerEditionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregistereditionplugin-plugin-)
+- [editore.registerInsertionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregisterinsertionplugin-plugin-)
 
 ###### editore.values()
   - return a object with all fields values.
@@ -150,7 +150,7 @@ editore.subscribeInput(function(currentField) {
     - **Plugin**: *Plugin Constructor*
     - **pluginOptions**: *Object*
 ```javascript
-editore.registerEditionPlugin(EditionPlugin);
+editore.registerEditionPlugin(EditionPlugin, pluginOptions);
 ```
 
 ###### editore.registerInsertionPlugin( *Plugin*, *pluginOptions* )
