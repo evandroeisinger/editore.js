@@ -213,6 +213,8 @@ Plugin.prototype = {
   action: function(currentSelectionField, clickEvent) {
     e.preventDefault();
     // do what you have to do
+    // trigger editor input
+    this.triggerInput();
   },
 
   destroy: function() {
