@@ -31,6 +31,7 @@
           self.restoreSelection();
           document.execCommand('createLink', false, url);
           self.hideElements();
+          self.triggerInput();
         }
       } else {
         self.input.classList.add('invalid');
@@ -43,6 +44,7 @@
       // apply link
       document.execCommand('unLink', false, null);
       self.hideElements();
+      self.triggerInput();
     };
 
     // create link form
@@ -136,3 +138,4 @@
 
   return EditoreLinkPlugin;
 }));
+    

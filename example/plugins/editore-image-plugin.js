@@ -53,6 +53,8 @@
     },
 
     uploadComplete: function(image, figure, callback) {
+      var self = this;
+      
       return function(url) {
         figure.classList.remove('preview');
         
@@ -60,6 +62,8 @@
           image.src = url;
         if (callback)
           callback(image, figure);
+        // trigget editore input
+        self.triggerInput();
       }
     },
 

@@ -20,9 +20,10 @@
   }
 
   EditoreBoldPlugin.prototype = {
-    action: function(field, e) {
+    action: function(field, e, done) {
       e.preventDefault();
       document.execCommand('bold', false, null);
+      this.triggerInput();
     },
 
     destroy: function() {}
@@ -30,3 +31,4 @@
 
   return EditoreBoldPlugin;
 }));
+    
