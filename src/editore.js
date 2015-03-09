@@ -114,6 +114,7 @@
       
       Plugin.prototype.component = self.components.edition;
       Plugin.prototype.options = options || {};
+      Plugin.prototype.triggerInput = null;
 
       // instance a new plugin
       var plugin = new Plugin();
@@ -131,6 +132,7 @@
 
       Plugin.prototype.component = self.components.insert;
       Plugin.prototype.options = options || {};
+      Plugin.prototype.triggerInput = null;
 
       // instance a new plugin
       var plugin = new Plugin();
@@ -404,7 +406,7 @@
 
       input: function(field, e) {
         var self = this;
-        self.emmitEvent('INPUT', field);
+        self.triggerEvent('INPUT', field);
       },
 
       disableBlocks: function(field, e) {
@@ -527,6 +529,10 @@
           plugin._action = self.setListener([plugin.action, self.setEditionComponentPluginsState], field, plugin);
         else
           plugin._action = self.setListener([plugin.action], field, plugin);
+        // set plugin input method
+        plugin.triggerInput = function() {
+          self.triggerEvent('INPUT', field);
+        }
         // set action handler
         plugin.button.addEventListener('click', plugin._action);
       }
@@ -629,12 +635,12 @@
       return false;
     },
 
-    emmitEvent: function(type, data) {
+    triggerEvent: function(type, data) {
       var self = this,
           callback;
 
       if (!self.eventTypes[type])
-        return new Error('cant emmit a invalid event!');
+        return new Error('cant trigger a invalid event!');
       
       for (callback in self.eventTypes[type]) {
         callback = self.eventTypes[type][callback];
