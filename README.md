@@ -177,11 +177,13 @@ Pretty soon we'll have more :pray:
 ##### method
   - context instance objects
     - **this.name**: *String* **(required)**
-      - editore uses this name to register and manage the plugin, also uses to define the class of the plugin button
+      - Editore uses this name to register and manage the plugin, also uses to define the class of the plugin button
     - **this.button**: *DOMElement* **(required)**
       - Editore get this button and insert into selection component
     - **this.tag**: *String* **(required if is a edition plugin)**
       - Editore uses this tag to check if the edition plugin is active with current selection element
+  - injected methods
+    - **this.triggerInput()**: Editore inject in the plugin instance context it's input trigger method, input events can be listened by [editore.subscribeInput( *callback* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresubscribeinput-callback-) method.
   - injected objects
     - **this.component**: Editore adds in the plugin instance context it's component object, enabling access to it's element, plugins and checkPluginsState method.
         - element: *DOMElement*
