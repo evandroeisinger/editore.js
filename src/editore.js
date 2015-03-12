@@ -27,7 +27,7 @@
 
     // editor components
     self.components = {
-      insert: {
+      insertion: {
         element: document.createElement('div'),
         plugins: [],
         status: false
@@ -41,8 +41,8 @@
     };
 
     // set action element      
-    self.components.insert.element.setAttribute('contenteditable', 'false');
-    self.components.insert.element.setAttribute('id', 'insertion-component');
+    self.components.insertion.element.setAttribute('contenteditable', 'false');
+    self.components.insertion.element.setAttribute('id', 'insertion-component');
     // set edition element      
     self.components.edition.element.setAttribute('contenteditable', 'false');
     self.components.edition.element.setAttribute('id', 'edition-component');
@@ -70,7 +70,7 @@
     self.fields        = {};
 
     // return editor fields
-    function fields() {
+    function _fields() {
       var data = {},
           field;
 
@@ -90,7 +90,7 @@
     }
 
     // return field values
-    function values() {
+    function _values() {
       var data = {},
           field;
 
@@ -108,7 +108,7 @@
     }
 
     // register edition plugins
-    function registerEditionPlugin(Plugin, options) {
+    function _registerEditionPlugin(Plugin, options) {
       if (!Plugin)
         return new Error('invalid plugin');
       
@@ -126,11 +126,11 @@
     }
 
     // register edition plugins
-    function registerInsertionPlugin(Plugin, options) {
+    function _registerInsertionPlugin(Plugin, options) {
       if (!Plugin)
         return new Error('invalid plugin');
 
-      Plugin.prototype.component = self.components.insert;
+      Plugin.prototype.component = self.components.insertion;
       Plugin.prototype.options = options || {};
       Plugin.prototype.triggerInput = null;
 
@@ -139,12 +139,12 @@
       // set plugin name into button class
       plugin.button.classList.add(plugin.name);
       // add plugin into his component
-      self.components.insert.plugins[plugin.name] = plugin;
-      self.components.insert.element.appendChild(plugin.button);
+      self.components.insertion.plugins[plugin.name] = plugin;
+      self.components.insertion.element.appendChild(plugin.button);
     }
 
     // set fields values
-    function setFieldsValues(fields) {
+    function _setFieldsValues(fields) {
       var field,
           value;
 
@@ -165,7 +165,7 @@
     }
 
     // clear editor fields values
-    function clearFields() {
+    function _clearFields() {
       var field;
 
       for (field in self.fields) {
@@ -178,7 +178,7 @@
     }
 
     // destroy editor
-    function destroy() {
+    function _destroy() {
       var component,
           plugin,
           field;
@@ -213,8 +213,21 @@
     }
 
     // register callbacks to editor input event
-    function subscribeInput(callback) {
+    function _subscribeInput(callback) {
       self.eventTypes.INPUT.push(callback);
+    }
+
+    // remove active components
+    function _hideComponents() {
+      if (self.components.insertion.status) {
+        self.components.insertion.status = false;
+        self.components.insertion.element.parentElement.removeChild(self.components.insertion.element);
+      }
+      if (self.components.edition.status) {
+        self.components.edition.status = false;
+        self.components.edition.selection = null;
+        self.components.edition.element.parentElement.removeChild(self.components.edition.element);
+      }
     }
 
     // editor constructor
@@ -296,14 +309,15 @@
     }
 
     return {
-      fields: fields,
-      setFieldsValues: setFieldsValues,
-      clearFields: clearFields,
-      values: values,
-      destroy: destroy,
-      subscribeInput: subscribeInput,
-      registerInsertionPlugin: registerInsertionPlugin,
-      registerEditionPlugin: registerEditionPlugin
+      fields: _fields,
+      setFieldsValues: _setFieldsValues,
+      clearFields: _clearFields,
+      values: _values,
+      destroy: _destroy,
+      subscribeInput: _subscribeInput,
+      hideComponents: _hideComponents,
+      registerInsertionPlugin: _registerInsertionPlugin,
+      registerEditionPlugin: _registerEditionPlugin
     };
   }
 
@@ -348,14 +362,14 @@
             _field, 
             currentBlock;
 
-        if ([91,40,38,37,39,13,1, 8].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == self.components.insert.element || e.target == self.components.edition.element)
+        if ([91,40,38,37,39,13,1, 8].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == self.components.insertion.element || e.target == self.components.edition.element)
           return;
       
         if (field.type == self.fieldTypes.RICH) {
           currentBlock = self.getCurrentBlock(self.getCurrentNode());
-          if (field.currentBlock !== currentBlock) {
+          if (field.currentBlock !== currentBlock || !self.components.insertion.status) {
             field.currentBlock = currentBlock;
-            self.setComponent('insert', field);
+            self.setComponent('insertion', field);
           }
         }
         
@@ -406,7 +420,7 @@
 
       input: function(field, e) {
         var self = this;
-        self.triggerEvent('INPUT', field);
+        self.triggerInput('INPUT', field);
       },
 
       disableBlocks: function(field, e) {
@@ -537,10 +551,10 @@
       }
 
       switch(component) {
-        case 'insert':
+        case 'insertion':
           // set insert component
-          field.element.insertBefore(self.components.insert.element, field.currentBlock.nextSibling);
-          self.components.insert.status = true;
+          field.element.insertBefore(self.components.insertion.element, field.currentBlock.nextSibling);
+          self.components.insertion.status = true;
           break;
         case 'edition':
           self.components.edition.element.innerHTML = "";
@@ -639,7 +653,7 @@
 
       return function() {
         self.triggerEvent('INPUT', field);
-      }
+      };
     },
 
     triggerEvent: function(type, data) {
