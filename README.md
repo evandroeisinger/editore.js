@@ -76,6 +76,7 @@ new Editor(element);
 - [editore.setFieldsValues( *fields* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresetfieldsvalues-fields-)
 - [editore.destroy()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoredestroy)
 - [editore.subscribeInput( *callback* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresubscribeinput-callback-)
+- [editore.hideComponents()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editorehidecomponents)
 - [editore.registerEditionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregistereditionplugin-plugin-)
 - [editore.registerInsertionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregisterinsertionplugin-plugin-)
 
@@ -142,6 +143,12 @@ editore.destroy();
 editore.subscribeInput(function(currentField) {
   console.log('Current: ', currentField);
 });
+```
+
+###### editore.hideComponents()
+  - hide insertion and edition components.
+```javascript
+editore.hideComponents();
 ```
 
 ###### editore.registerEditionPlugin( *Plugin*, *pluginOptions* )
