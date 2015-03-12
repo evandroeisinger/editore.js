@@ -517,8 +517,9 @@
 
     setComponent: function(component, field) {
       var self = this,
+          triggerInput,
           plugin;
-          
+    
       for (plugin in self.components[component].plugins) {
         plugin = self.components[component].plugins[plugin];
         // unset old action
@@ -530,9 +531,7 @@
         else
           plugin._action = self.setListener([plugin.action], field, plugin);
         // set plugin input method
-        plugin.triggerInput = function() {
-          self.triggerEvent('INPUT', field);
-        }
+        plugin.triggerInput = self.triggerInput(field);
         // set action handler
         plugin.button.addEventListener('click', plugin._action);
       }
@@ -635,6 +634,14 @@
       return false;
     },
 
+    triggerInput: function(field) {
+      var self = this;
+
+      return function() {
+        self.triggerEvent('INPUT', field);
+      }
+    },
+
     triggerEvent: function(type, data) {
       var self = this,
           callback;
@@ -646,8 +653,6 @@
         callback = self.eventTypes[type][callback];
         callback.call(self, data);
       }
-
-      return self;
     }
   };
 
