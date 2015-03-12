@@ -76,6 +76,7 @@ new Editor(element);
 - [editore.setFieldsValues( *fields* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresetfieldsvalues-fields-)
 - [editore.destroy()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoredestroy)
 - [editore.subscribeInput( *callback* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoresubscribeinput-callback-)
+- [editore.triggerInput( *data* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoretriggerinput-data-)
 - [editore.hideComponents()](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editorehidecomponents)
 - [editore.registerEditionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregistereditionplugin-plugin-)
 - [editore.registerInsertionPlugin( *Plugin*, *pluginOptions* )](https://github.com/evandroeisinger/editore.js/blob/master/README.md#editoreregisterinsertionplugin-plugin-)
@@ -143,6 +144,13 @@ editore.destroy();
 editore.subscribeInput(function(currentField) {
   console.log('Current: ', currentField);
 });
+```
+
+###### editore.triggerInput( *data* )
+  - parameters
+    - **data**: *Object|String|Number* **(optional)**
+```javascript
+editore.triggerInput();
 ```
 
 ###### editore.hideComponents()
