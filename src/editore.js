@@ -217,6 +217,12 @@
       self.eventTypes.INPUT.push(callback);
     }
 
+    // trigger a generic input
+    function _triggerInput(data) {
+      self.triggerEvent('INPUT', data);
+    }
+    
+
     // remove active components
     function _hideComponents() {
       if (self.components.insertion.status) {
@@ -314,6 +320,7 @@
       clearFields: _clearFields,
       values: _values,
       destroy: _destroy,
+      triggerInput: _triggerInput,
       subscribeInput: _subscribeInput,
       hideComponents: _hideComponents,
       registerInsertionPlugin: _registerInsertionPlugin,
@@ -420,7 +427,7 @@
 
       input: function(field, e) {
         var self = this;
-        self.triggerInput('INPUT', field);
+        self.triggerEvent('INPUT', field);
       },
 
       disableBlocks: function(field, e) {
