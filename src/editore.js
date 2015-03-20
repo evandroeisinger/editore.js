@@ -485,13 +485,18 @@
         return node;
     },
 
-    getCurrentBlock: function(currentNode) {
-      var self = this,
-          currentTagName = currentNode.tagName.toLowerCase();
+    isBlockElement: function(nodeToTest){
+      var fields = this.fields;
+      return Object.keys(fields).some(function(field){
+        return nodeToTest === fields[field].element
+      });
+    },
 
-      if (currentTagName == self.default.blockElement)
+    getCurrentBlock: function(currentNode) {
+      if (this.isBlockElement(currentNode.parentNode)){
           return currentNode;
-      return self.getCurrentBlock(currentNode.parentNode);
+      }
+      return this.getCurrentBlock(currentNode.parentNode);
     },
 
     getValue: function(field) {
