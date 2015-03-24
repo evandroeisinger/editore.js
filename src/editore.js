@@ -40,10 +40,10 @@
       }
     };
 
-    // set action element      
+    // set action element
     self.components.insertion.element.setAttribute('contenteditable', 'false');
     self.components.insertion.element.setAttribute('id', 'insertion-component');
-    // set edition element      
+    // set edition element
     self.components.edition.element.setAttribute('contenteditable', 'false');
     self.components.edition.element.setAttribute('id', 'edition-component');
     self.components.edition.element.style.position = 'absolute';
@@ -60,8 +60,8 @@
     self.regex.space        = /\s/g;
     self.regex.spaces       = /\s+/g;
     self.regex.trim         = /\s+$/g;
-    self.regex.lineBreak      = /[\r\n]/g; 
-    self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g; 
+    self.regex.lineBreak      = /[\r\n]/g;
+    self.regex.lineBreaks     = /(\r\n|\n|\r)[.]?/g;
     self.regex.spaceAndEnbsp  = /\s|&nbsp;/g;
     self.regex.insertionComponenet = /<div contenteditable="false" id="insertion-component">.*<\/div>/;
 
@@ -111,7 +111,7 @@
     function _registerEditionPlugin(Plugin, options) {
       if (!Plugin)
         return new Error('invalid plugin');
-      
+
       Plugin.prototype.component = self.components.edition;
       Plugin.prototype.options = options || {};
       Plugin.prototype.triggerInput = null;
@@ -221,7 +221,7 @@
     function _triggerInput(data) {
       self.triggerEvent('INPUT', data);
     }
-    
+
 
     // remove active components
     function _hideComponents() {
@@ -292,7 +292,7 @@
         self.fields[field].element.style.minHeight = '1em'; //fix empty contenteditable input
         self.fields[field].element.setAttribute('contenteditable', true);
         self.fields[field].element.setAttribute('tabindex', (i - length) + 1);
-        // create event handlers    
+        // create event handlers
         self.fields[field].events.paste = self.setListener(pasteEvents, self.fields[field], self);
         self.fields[field].events.click = self.setListener(clickEvents, self.fields[field], self);
         self.fields[field].events.mouseup = self.setListener(mouseUpEvents, self.fields[field], self);
@@ -341,7 +341,7 @@
             left;
 
         if (selectionSupport.indexOf(selectionTag) < 0)
-          return; 
+          return;
 
         if (selection.type == 'Range') {
           self.setComponent('edition', field);
@@ -366,12 +366,12 @@
 
       focus: function(field, e) {
         var self = this,
-            _field, 
+            _field,
             currentBlock;
 
         if ([91,40,38,37,39,13,1, 8].indexOf(e.which) < 0 || (!field.length & e.type !== 'click') || e.target == self.components.insertion.element || e.target == self.components.edition.element)
           return;
-      
+
         if (field.type == self.fieldTypes.RICH) {
           currentBlock = self.getCurrentBlock(self.getCurrentNode());
           if (field.currentBlock !== currentBlock || !self.components.insertion.status) {
@@ -379,10 +379,10 @@
             self.setComponent('insertion', field);
           }
         }
-        
+
         for (_field in self.fields) {
           _field = self.fields[_field];
-          
+
           if (_field == field) {
             _field.focus = true;
             _field.element.classList.add('focus');
@@ -467,7 +467,7 @@
       removeSpan: function(field, e) {
         var span = e.target;
 
-        if (span.nodeType == 3 || span.tagName.toLowerCase() !== "span" ) 
+        if (span.nodeType == 3 || span.tagName.toLowerCase() !== "span" )
           return;
         // https://code.google.com/p/chromium/issues/detail?id=226941
         span.parentNode.insertBefore(document.createTextNode(span.innerText), span);
@@ -485,13 +485,18 @@
         return node;
     },
 
+    isBlockElement: function(nodeToTest){
+      var fields = this.fields;
+      return Object.keys(fields).some(function(field){
+        return nodeToTest === fields[field].element
+      });
+    },
+
     getCurrentBlock: function(currentNode) {
-      var self = this,
-          currentTagName = currentNode.tagName.toLowerCase();
-      
-      if (currentTagName == self.default.blockElement)
+      if (this.isBlockElement(currentNode.parentNode)){
           return currentNode;
-      return self.getCurrentBlock(currentNode.parentNode);
+      }
+      return this.getCurrentBlock(currentNode.parentNode);
     },
 
     getValue: function(field) {
@@ -532,7 +537,7 @@
           value = value.toString();
           break;
       }
-      
+
       return value;
     },
 
@@ -540,7 +545,7 @@
       var self = this,
           triggerInput,
           plugin;
-    
+
       for (plugin in self.components[component].plugins) {
         plugin = self.components[component].plugins[plugin];
         // unset old action
@@ -638,7 +643,7 @@
         field.element.classList.add('invalid');
         return true;
       }
-      
+
       field.element.classList.remove('invalid');
       return false;
     },
@@ -669,7 +674,7 @@
 
       if (!self.eventTypes[type])
         return new Error('cant trigger a invalid event!');
-      
+
       for (callback in self.eventTypes[type]) {
         callback = self.eventTypes[type][callback];
         callback.call(self, data);
