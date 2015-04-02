@@ -183,6 +183,7 @@ Pretty soon we'll have more :pray:
 - [Bold Edition Plugin](https://github.com/evandroeisinger/editore-bold-plugin.js)
 - [Italic Edition Plugin](https://github.com/evandroeisinger/editore-italic-plugin.js)
 - [Link Edition Plugin](https://github.com/evandroeisinger/editore-link-plugin.js)
+- [Embed Insertion Plugin](https://github.com/evandroeisinger/editore-embed-plugin.js)
 - [Image Insertion Plugin](https://github.com/evandroeisinger/editore-image-plugin.js)
 
 ### Plugin constructor
