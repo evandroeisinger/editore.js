@@ -1,16 +1,24 @@
-# editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm version](https://badge.fury.io/js/editore.svg)](http://badge.fury.io/js/editore) [![Bower version](https://badge.fury.io/bo/editore.svg)](http://badge.fury.io/bo/editore)
+# editore.js [![Build Status](https://travis-ci.org/evandroeisinger/editore.js.svg?branch=master)](https://travis-ci.org/evandroeisinger/editore.js) [![npm version](https://badge.fury.io/js/editore.svg)](https://www.npmjs.com/package/editore) [![Bower version](https://badge.fury.io/bo/editore.svg)](http://bower.io/search/?q=editore)
 
-> A magnific javascript editor! Easy to create and valitade fields and get data from them, even better is that you don't need to handle contenteditable yourself :8ball: 
+A magnific javascript editor! Create, validate and get data from fields easily without ever have to handle contenteditable yourself. :8ball:
 
-#### install
-Available on npm and bower:
-`npm install editore`, `bower install editore` or [directly download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js)
+## install
 
-#### basic usage
-Load editore.js into your application, create the editor wrapper element, set some fields and instantiate a new Editore.
+Available on npm and bower, or through [direct download](https://github.com/evandroeisinger/editore.js/raw/master/src/editore.js).
+
+```sh
+npm install editore
+```
+
+```sh
+bower install editore
+```
+
+## basic usage
+
+Load editore.js into your application, then create the editor wrapper element with some fields inside:
 
 ```html
-<!-- Create editor wrapper element and some fields: -->
 <div id="editor">
   <h1 data-field="title" data-placeholder="Title" data-require="true" data-length="60">Example title</h1>
   <h3>Article</h3>
@@ -20,30 +28,33 @@ Load editore.js into your application, create the editor wrapper element, set so
 </div>
 ```
 
+Now instantiate a new Editore:
+
 ```javascript
-// Instantiate a new Editore passing fields wrapper element:
 var editore = new Editore(document.getElementById('editor'));
 
-//Get values from fields:
 var values = editore.values();
 
 /* 
-values = {
-  title: {
-    name: 'title',
-    length: 13,
-    value: 'Example title',
-    valid: false
-  },
-  articleBody: {
-    name: 'articleBody',
-    length: 18,
-    value: '<p>Lorem lorem lorem!</p>',
-    valid: true
+  values will be something like this:
+
+  {
+   title: {
+     name: 'title',
+     length: 13,
+     value: 'Example title',
+     valid: false
+   },
+   articleBody: {
+     name: 'articleBody',
+     length: 18,
+     value: '<p>Lorem lorem lorem!</p>',
+     valid: true
+   }
   }
-}
-*/
+ */
 ```
+
 ---
 ### constructor
 ```javascript
