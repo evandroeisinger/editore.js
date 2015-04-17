@@ -238,15 +238,16 @@
 
     // editor constructor
     for (var i = fieldsWrapper.children.length - 1; i >= 0; i--) {
-      var element        = fieldsWrapper.children[i],
-          field          = self.getDataAttribute('field', element, 'str', false),
-          placeholder    = self.getDataAttribute('placeholder', element, 'str', false),
-          pasteEvents    = [],
-          clickEvents    = [],
-          mouseUpEvents  = [],
-          keyupEvents    = [],
-          keydownEvents  = [],
-          keypressEvents = [],
+      var element         = fieldsWrapper.children[i],
+          field           = self.getDataAttribute('field', element, 'str', false),
+          placeholder     = self.getDataAttribute('placeholder', element, 'str', false),
+          pasteEvents     = [],
+          clickEvents     = [],
+          mouseDownEvents = [],
+          mouseUpEvents   = [],
+          keyupEvents     = [],
+          keydownEvents   = [],
+          keypressEvents  = [],
           DOMNodeInsertedEvents = [];
 
       if (field &&  placeholder) {
@@ -275,6 +276,7 @@
           case self.fieldTypes.RICH:
             pasteEvents.push(self.binds.paste, self.binds.input);
             clickEvents.push(self.binds.blocksCreation, self.binds.focus);
+            mouseDownEvents.push(self.binds.clearSelection);
             mouseUpEvents.push(self.binds.selection);
             keydownEvents.push(self.binds.removePlaceholder);
             keyupEvents.push(self.binds.length, self.binds.blocksCreation, self.binds.focus, self.binds.placeholder, self.binds.input);
@@ -295,6 +297,7 @@
         // create event handlers
         self.fields[field].events.paste = self.setListener(pasteEvents, self.fields[field], self);
         self.fields[field].events.click = self.setListener(clickEvents, self.fields[field], self);
+        self.fields[field].events.mousedown = self.setListener(mouseDownEvents, self.fields[field], self);
         self.fields[field].events.mouseup = self.setListener(mouseUpEvents, self.fields[field], self);
         self.fields[field].events.keydown = self.setListener(keydownEvents, self.fields[field], self);
         self.fields[field].events.keypress = self.setListener(keypressEvents, self.fields[field], self);
@@ -303,6 +306,7 @@
         // atach event handlers
         self.fields[field].element.addEventListener('paste', self.fields[field].events.paste);
         self.fields[field].element.addEventListener('click', self.fields[field].events.click);
+        self.fields[field].element.addEventListener('mousedown', self.fields[field].events.mousedown);
         self.fields[field].element.addEventListener('mouseup', self.fields[field].events.mouseup);
         self.fields[field].element.addEventListener('keydown', self.fields[field].events.keydown);
         self.fields[field].element.addEventListener('keypress', self.fields[field].events.keypress);
@@ -330,6 +334,19 @@
 
   Editore.prototype = {
     binds: {
+      clearSelection: function() {
+        if (document.selection)
+          return document.selection.empty();
+        if (!window.getSelection)
+          return;
+        // chrome
+        if (window.getSelection().empty)
+          return window.getSelection().empty();
+        // firefox
+        if (window.getSelection().removeAllRanges)
+          return window.getSelection().removeAllRanges();
+      },
+
       selection: function(field, e) {
         var self = this,
             selection = window.getSelection(),
