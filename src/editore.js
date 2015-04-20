@@ -636,6 +636,8 @@
       var method;
 
       return function(e) {
+        e.stopPropagation();
+
         for (method in methods) {
           method = methods[method];
           method.call(context, data, e);
