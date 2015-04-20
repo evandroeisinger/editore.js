@@ -278,8 +278,8 @@
             clickEvents.push(self.binds.blocksCreation, self.binds.focus);
             mouseDownEvents.push(self.binds.clearSelection);
             mouseUpEvents.push(self.binds.selection);
-            keydownEvents.push(self.binds.removePlaceholder);
-            keyupEvents.push(self.binds.length, self.binds.blocksCreation, self.binds.focus, self.binds.placeholder, self.binds.input);
+            keydownEvents.push(self.binds.removePlaceholder, self.binds.blocksCreation);
+            keyupEvents.push(self.binds.length, self.binds.focus, self.binds.placeholder, self.binds.input, self.binds.selection);
             DOMNodeInsertedEvents.push(self.binds.removeSpan);
             break;
         }
@@ -350,15 +350,10 @@
       selection: function(field, e) {
         var self = this,
             selection = window.getSelection(),
-            selectionSupport = ['p', 'b', 'a', 'i'],
-            selectionTag = e.target.tagName.toLowerCase(),
             range,
             position,
             top,
             left;
-
-        if (selectionSupport.indexOf(selectionTag) < 0)
-          return;
 
         if (selection.type == 'Range') {
           self.setComponent('edition', field);
@@ -391,6 +386,7 @@
 
         if (field.type == self.fieldTypes.RICH) {
           currentBlock = self.getCurrentBlock(self.getCurrentNode());
+
           if (field.currentBlock !== currentBlock || !self.components.insertion.status) {
             field.currentBlock = currentBlock;
             self.setComponent('insertion', field);
@@ -444,6 +440,12 @@
 
       input: function(field, e) {
         var self = this;
+
+        if (self.components.edition.selection) {
+          document.body.removeChild(self.components.edition.element);
+          self.components.edition.selection = null;
+        }
+
         self.triggerEvent('INPUT', field);
       },
 
@@ -456,7 +458,7 @@
         var self = this,
             node = self.getCurrentNode();
 
-        if ((node && node.children.length === 0 && e.which !== 8) || (!field.length && e.which === 1))
+        if (!e.shiftKey && (node && node.children.length === 0) || (!field.length && e.which === 1))
           document.execCommand('formatBlock', false, self.default.blockElement);
       },
 
