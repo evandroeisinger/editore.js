@@ -410,32 +410,9 @@
         e.preventDefault();
 
         var self = this,
-            html = [],
-            blocks = e.clipboardData.getData('text/plain'),
-            block, blockOpen, blockClose;
+            clipboardData = e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ');
 
-        switch(field.type) {
-          case self.fieldTypes.SIMPLE:
-            html = [e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ')];
-            break;
-
-          case self.fieldTypes.RICH:
-            blocks = e.clipboardData.getData('text/plain').split(self.regex.lineBreak);
-            blockOpen = ('<' + self.default.blockElement + '>');
-            blockClose = ('</' + self.default.blockElement + '>');
-
-            for (block in blocks) {
-              block = blocks[block];
-              html.push(blockOpen, block, blockClose);
-            }
-            break;
-
-          default:
-            html = [e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ')];
-            break;
-        }
-
-        document.execCommand('insertHTML', false, html.join(''));
+        document.execCommand('insertText', false, clipboardData);
       },
 
       input: function(field, e) {
