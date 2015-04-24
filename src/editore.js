@@ -410,7 +410,7 @@
         e.preventDefault();
 
         var self = this,
-            clipboardData = e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ');
+          clipboardData = e.clipboardData.getData('text/plain').replace(self.regex.spaces, ' ');
 
         document.execCommand('insertText', false, clipboardData);
       },
@@ -432,10 +432,9 @@
       },
 
       blocksCreation: function(field, e) {
-        var self = this,
-            node = self.getCurrentNode();
+        var self = this;
 
-        if (!e.shiftKey && (node && node.children.length === 0) || (!field.length && e.which === 1))
+        if (field.length == 0)
           document.execCommand('formatBlock', false, self.default.blockElement);
       },
 
@@ -615,8 +614,6 @@
       var method;
 
       return function(e) {
-        e.stopPropagation();
-
         for (method in methods) {
           method = methods[method];
           method.call(context, data, e);
